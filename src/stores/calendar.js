@@ -1,0 +1,108 @@
+import { defineStore } from "pinia";
+
+export const calendarStore = defineStore("calendar", {
+  state: () => ({
+    _events: [
+      {
+        id: 1,
+        title: "Estudar VueJS",
+        details: "Hora de aprender!",
+        date: "2023-04-01",
+        bgcolor: "orange",
+      },
+      {
+        id: 2,
+        title: "Aniversário de Fulano",
+        details: "Comprar um presente bem legal",
+        date: "2023-04-04",
+        bgcolor: "green",
+        icon: "fas fa-birthday-cake",
+      },
+      {
+        id: 3,
+        title: "Meeting",
+        details: "Hora de conversar com o time da empresa",
+        date: "2023-04-10",
+        time: "10:00",
+        duration: 120,
+        bgcolor: "red",
+        icon: "fas fa-handshake",
+      },
+      {
+        id: 4,
+        title: "Almoço",
+        details: "A melhor hora do dia!",
+        date: "2023-04-10",
+        time: "11:30",
+        duration: 90,
+        bgcolor: "teal",
+        icon: "fas fa-hamburger",
+      },
+      {
+        id: 5,
+        title: "Visitar a mão",
+        details: "Levar flores",
+        date: "2023-04-20",
+        time: "17:00",
+        duration: 90,
+        bgcolor: "grey",
+        icon: "fas fa-car",
+      },
+      {
+        id: 6,
+        title: "Conferência",
+        details: "Vamos pro CCXP",
+        date: "2023-04-22",
+        time: "08:00",
+        duration: 540,
+        bgcolor: "blue",
+        icon: "fas fa-chalkboard-teacher",
+      },
+      {
+        id: 7,
+        title: "Encontro com o cliente",
+        details: "Reservar um bom restaurante",
+        date: "2023-04-22",
+        time: "19:00",
+        duration: 180,
+        bgcolor: "teal",
+        icon: "fas fa-utensils",
+      },
+      {
+        id: 8,
+        title: "Estudar Ruby on Rais",
+        details: "Hora de aprender!",
+        date: "2023-04-27",
+        bgcolor: "purple",
+        icon: "rowing",
+        days: 2,
+      },
+      {
+        id: 9,
+        title: "Pescaria",
+        details: "Não esquecer o anzol",
+        date: "2023-04-27",
+        bgcolor: "purple",
+        icon: "fas fa-fish",
+        days: 2,
+      },
+      {
+        id: 10,
+        title: "Férias",
+        details: "Vamos para Florianópolis!",
+        date: "2023-04-29",
+        bgcolor: "purple",
+        icon: "fas fa-plane",
+        days: 5,
+      },
+    ],
+  }),
+  getters: {
+    getEvents: (state) => state._events,
+  },
+  actions: {
+    addEvent(event) {
+      this._events.push(event);
+    },
+  },
+});
