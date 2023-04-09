@@ -1,6 +1,6 @@
 # Agenda simples
 
-Em construção
+Em construção...
 
 ## Install the dependencies
 

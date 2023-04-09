@@ -1,6 +1,7 @@
 <template>
   <div :class="containerClasses(event, 'day')" class="my-event">
     <div class="title q-calendar__ellipsis">
+      <q-icon v-if="event.icon" :name="event.icon" class="q-mr-sm" />
       {{ event.title + (event.time ? " - " + event.time : "") }}
       <q-tooltip>{{ event.details }}</q-tooltip>
     </div>

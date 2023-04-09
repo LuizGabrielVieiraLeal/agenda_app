@@ -5,20 +5,20 @@
         <CalendarMonth />
       </div>
     </div>
-    <EventButton />
+    <EventDialog />
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from "vue";
 import CalendarMonth from "../components/CaledarMonth.vue";
-import EventButton from "../components/EventButton.vue";
+import EventDialog from "../components/EventDialog.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
     CalendarMonth,
-    EventButton,
+    EventDialog,
   },
 });
 </script>

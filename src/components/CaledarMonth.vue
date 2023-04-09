@@ -1,6 +1,11 @@
 <template>
   <div class="subcontent">
-    <navigation-bar @today="onToday" @prev="onPrev" @next="onNext">
+    <navigation-bar
+      :selectedDate="selectedDate"
+      @today="onToday"
+      @prev="onPrev"
+      @next="onNext"
+    >
       <span class="navigation-label">{{ navigationLabel }}</span>
     </navigation-bar>
     <div class="row q-pa-sm">

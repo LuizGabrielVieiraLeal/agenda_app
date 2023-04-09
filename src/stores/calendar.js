@@ -9,6 +9,7 @@ export const calendarStore = defineStore("calendar", {
         details: "Hora de aprender!",
         date: "2023-04-01",
         bgcolor: "orange",
+        icon: "bi-book-fill",
       },
       {
         id: 2,
@@ -36,11 +37,10 @@ export const calendarStore = defineStore("calendar", {
         time: "11:30",
         duration: 90,
         bgcolor: "teal",
-        icon: "fas fa-hamburger",
       },
       {
         id: 5,
-        title: "Visitar a mão",
+        title: "Visitar a mãe",
         details: "Levar flores",
         date: "2023-04-20",
         time: "17:00",
@@ -74,7 +74,7 @@ export const calendarStore = defineStore("calendar", {
         details: "Hora de aprender!",
         date: "2023-04-27",
         bgcolor: "purple",
-        icon: "rowing",
+        icon: "bi-book-fill",
         days: 2,
       },
       {
@@ -83,7 +83,6 @@ export const calendarStore = defineStore("calendar", {
         details: "Não esquecer o anzol",
         date: "2023-04-27",
         bgcolor: "purple",
-        icon: "fas fa-fish",
         days: 2,
       },
       {
@@ -92,7 +91,7 @@ export const calendarStore = defineStore("calendar", {
         details: "Vamos para Florianópolis!",
         date: "2023-04-29",
         bgcolor: "purple",
-        icon: "fas fa-plane",
+        icon: "bi-airplane-fill",
         days: 5,
       },
     ],
