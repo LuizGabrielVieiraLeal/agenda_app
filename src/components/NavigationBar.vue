@@ -18,7 +18,7 @@
           <q-date
             v-model="date"
             :events="eventsDate"
-            event-color="positive"
+            event-color="warning"
             minimal
         /></q-menu>
       </q-btn>

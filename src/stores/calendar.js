@@ -8,6 +8,8 @@ export const calendarStore = defineStore("calendar", {
         title: "Estudar VueJS",
         details: "Hora de aprender!",
         date: "2023-04-01",
+        time: null,
+        duration: null,
         bgcolor: "orange",
         icon: "bi-book-fill",
       },
@@ -16,6 +18,8 @@ export const calendarStore = defineStore("calendar", {
         title: "Aniversário de Fulano",
         details: "Comprar um presente bem legal",
         date: "2023-04-04",
+        time: null,
+        duration: null,
         bgcolor: "green",
         icon: "fas fa-birthday-cake",
       },
@@ -73,6 +77,8 @@ export const calendarStore = defineStore("calendar", {
         title: "Estudar Ruby on Rais",
         details: "Hora de aprender!",
         date: "2023-04-27",
+        time: null,
+        duration: null,
         bgcolor: "purple",
         icon: "bi-book-fill",
         days: 2,
@@ -82,6 +88,8 @@ export const calendarStore = defineStore("calendar", {
         title: "Pescaria",
         details: "Não esquecer o anzol",
         date: "2023-04-27",
+        time: null,
+        duration: null,
         bgcolor: "purple",
         days: 2,
       },
@@ -90,6 +98,8 @@ export const calendarStore = defineStore("calendar", {
         title: "Férias",
         details: "Vamos para Florianópolis!",
         date: "2023-04-29",
+        time: null,
+        duration: null,
         bgcolor: "purple",
         icon: "bi-airplane-fill",
         days: 5,
@@ -100,7 +110,10 @@ export const calendarStore = defineStore("calendar", {
     getEvents: (state) => state._events,
   },
   actions: {
-    addEvent(event) {
+    async addEvent(event) {
+      for (const [key, value] of Object.entries(event)) {
+        if (value === null) delete event[key];
+      }
       this._events.push(event);
     },
   },
