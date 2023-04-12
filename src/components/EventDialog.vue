@@ -23,7 +23,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <EventForm @onAddedEvent="addedEvent" />
+          <EventForm @onEventTriggered="eventTriggered" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -43,17 +43,17 @@ export default defineComponent({
     const $q = useQuasar();
     const dialog = ref(false);
 
-    const addedEvent = () => {
+    const eventTriggered = (response) => {
       dialog.value = false;
       $q.notify({
-        message: "Evento adicionado com sucesso!",
-        color: "positive",
+        message: response.message,
+        color: response.color,
       });
     };
 
     return {
       dialog,
-      addedEvent,
+      eventTriggered,
     };
   },
 });

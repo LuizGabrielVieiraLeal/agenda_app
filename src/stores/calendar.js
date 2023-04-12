@@ -2,6 +2,34 @@ import { defineStore } from "pinia";
 
 export const calendarStore = defineStore("calendar", {
   state: () => ({
+    _allowedColors: [
+      "blue",
+      "indigo",
+      "green",
+      "cyan",
+      "red",
+      "pink",
+      "purple",
+      "yellow",
+      "orange",
+      "brown",
+      "grey",
+      "dark",
+    ],
+    _allowedIcons: [
+      "favorite",
+      "auto_stories",
+      "grade",
+      "flight_takeoff",
+      "fitness_center",
+      "textsms",
+      "work",
+      "bookmark",
+      "warning",
+      "light_mode",
+      "celebration",
+      "cake",
+    ],
     _events: [
       {
         id: 1,
@@ -11,7 +39,7 @@ export const calendarStore = defineStore("calendar", {
         time: null,
         duration: null,
         bgcolor: "orange",
-        icon: "bi-book-fill",
+        icon: "auto_stories",
       },
       {
         id: 2,
@@ -21,7 +49,7 @@ export const calendarStore = defineStore("calendar", {
         time: null,
         duration: null,
         bgcolor: "green",
-        icon: "fas fa-birthday-cake",
+        icon: "cake",
       },
       {
         id: 3,
@@ -31,7 +59,7 @@ export const calendarStore = defineStore("calendar", {
         time: "10:00",
         duration: 120,
         bgcolor: "red",
-        icon: "fas fa-handshake",
+        icon: "textsms",
       },
       {
         id: 4,
@@ -40,7 +68,7 @@ export const calendarStore = defineStore("calendar", {
         date: "2023-04-10",
         time: "11:30",
         duration: 90,
-        bgcolor: "teal",
+        bgcolor: "indigo",
       },
       {
         id: 5,
@@ -50,7 +78,7 @@ export const calendarStore = defineStore("calendar", {
         time: "17:00",
         duration: 90,
         bgcolor: "grey",
-        icon: "fas fa-car",
+        icon: "favorite",
       },
       {
         id: 6,
@@ -60,7 +88,6 @@ export const calendarStore = defineStore("calendar", {
         time: "08:00",
         duration: 540,
         bgcolor: "blue",
-        icon: "fas fa-chalkboard-teacher",
       },
       {
         id: 7,
@@ -69,8 +96,7 @@ export const calendarStore = defineStore("calendar", {
         date: "2023-04-22",
         time: "19:00",
         duration: 180,
-        bgcolor: "teal",
-        icon: "fas fa-utensils",
+        bgcolor: "orange",
       },
       {
         id: 8,
@@ -80,7 +106,7 @@ export const calendarStore = defineStore("calendar", {
         time: null,
         duration: null,
         bgcolor: "purple",
-        icon: "bi-book-fill",
+        icon: "auto_stories",
         days: 2,
       },
       {
@@ -90,7 +116,7 @@ export const calendarStore = defineStore("calendar", {
         date: "2023-04-27",
         time: null,
         duration: null,
-        bgcolor: "purple",
+        bgcolor: "pink",
         days: 2,
       },
       {
@@ -101,19 +127,21 @@ export const calendarStore = defineStore("calendar", {
         time: null,
         duration: null,
         bgcolor: "purple",
-        icon: "bi-airplane-fill",
+        icon: "flight_takeoff",
         days: 5,
       },
     ],
   }),
   getters: {
+    getAllowedColors: (state) => state._allowedColors,
+    getAllowedIcons: (state) => state._allowedIcons,
     getEvents: (state) => state._events,
   },
   actions: {
     async addEvent(event) {
-      for (const [key, value] of Object.entries(event)) {
+      // removendo chaves nulas do objeto por causa do bug do QCalendar
+      for (const [key, value] of Object.entries(event))
         if (value === null) delete event[key];
-      }
       this._events.push(event);
     },
   },

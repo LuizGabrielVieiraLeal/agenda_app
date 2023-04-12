@@ -30,31 +30,42 @@
           label="Data*"
           :rules="[
             (val) => !!val || 'O preenchimento deste campo é necessário',
+            (val) => dateIsValid(val) || 'Data inválida',
           ]"
         />
       </div>
       <div class="col-xs-6 col-md-3 q-mb-xs q-px-xs">
-        <q-input v-model="data.time" filled type="time" label="Hora inicial" />
+        <q-input
+          v-model="data.time"
+          filled
+          type="time"
+          label="Hora inicial"
+          :rules="[(val) => timeIsValid(val) || 'Hora inválida']"
+        />
       </div>
       <div class="col-xs-6 col-md-3 q-mb-xs q-px-xs">
-        <q-input v-model="finalTime" filled type="time" label="Hora final" />
+        <q-input
+          v-model="finalTime"
+          filled
+          type="time"
+          label="Hora final"
+          :rules="[(val) => finalTimeIsValid(val) || 'Hora inválida']"
+        />
       </div>
       <div class="col-xs-12 q-mb-xs q-px-xs">
         <p>Selecione uma cor para seu evento*</p>
       </div>
       <div
-        v-for="color in allowedColors"
+        v-for="color in colors"
         :key="color"
-        class="column col-xs-4 col-md-3 content-center q-mb-xs q-px-xs"
+        class="column col-xs-6 col-md-3 content-center q-mb-xs q-px-xs"
       >
         <div class="row">
           <div class="col-6">
-            <q-radio v-model="data.bgcolor" :val="color.value" />
+            <q-radio v-model="data.bgcolor" :val="color" />
           </div>
           <div class="col-6 q-pt-xs">
-            <q-badge :color="color.value" class="q-mt-sm">
-              {{ color.label }}
-            </q-badge>
+            <q-badge :color="color" class="q-pa-lg q-mt-sm" />
           </div>
         </div>
       </div>
@@ -62,9 +73,9 @@
         <p>Que tal adicionar um ícone ao seu evento? &#128521;</p>
       </div>
       <div
-        v-for="icon in allowedIcons"
+        v-for="icon in icons"
         :key="icon"
-        class="column col-xs-3 col-md-2 content-center q-mb-xs q-px-xs"
+        class="column col-xs-4 col-md-2 content-center q-mb-xs q-px-xs"
       >
         <div class="row">
           <div class="col-6"><q-radio v-model="data.icon" :val="icon" /></div>
@@ -74,9 +85,16 @@
         </div>
       </div>
     </div>
-    <div class="row justify-end q-mt-md">
-      <q-btn flat label="Fechar" icon="close" v-close-popup />
-      <q-btn flat label="Salvar" icon="save" color="primary" type="submit" />
+    <div class="row justify-end q-mt-lg">
+      <q-btn outline label="Fechar" icon="close" v-close-popup />
+      <q-btn
+        outline
+        label="Salvar"
+        icon="save"
+        color="primary"
+        type="submit"
+        class="q-ml-sm"
+      />
     </div>
   </q-form>
 </template>
@@ -84,11 +102,14 @@
 <script>
 import { defineComponent, reactive, ref } from "vue";
 import { calendarStore } from "../stores/calendar";
+import { today } from "@quasar/quasar-ui-qcalendar/src";
 
 export default defineComponent({
-  emits: ["onAddedEvent"],
+  emits: ["onEventTriggered"],
   setup(_, { emit }) {
     const store = calendarStore();
+    const colors = store.getAllowedColors;
+    const icons = store.getAllowedIcons;
 
     const eventForm = ref(null),
       finalTime = ref(null);
@@ -104,40 +125,30 @@ export default defineComponent({
       days: null,
     });
 
-    const allowedColors = [
-      { label: "Azul", value: "blue" },
-      { label: "Indigo", value: "indigo" },
-      { label: "Verde", value: "green" },
-      { label: "Ciano", value: "cyan" },
-      { label: "Vermelho", value: "red" },
-      { label: "Rosa", value: "pink" },
-      { label: "Roxo", value: "purple" },
-      { label: "Amarelo", value: "yellow" },
-      { label: "Laranja", value: "orange" },
-      { label: "Marrom", value: "brown" },
-      { label: "Cinza", value: "grey" },
-      { label: "Preto", value: "dark" },
-    ];
+    const dateIsValid = (selectedDate) => {
+      const currentDate = today();
+      return selectedDate >= currentDate;
+    };
 
-    const allowedIcons = [
-      "favorite",
-      "auto_stories",
-      "grade",
-      "flight_takeoff",
-      "fitness_center",
-      "textsms",
-      "work",
-      "bookmark",
-      "warning",
-      "light_mode",
-      "celebration",
-      "cake",
-    ];
+    const timeIsValid = (selectedTime) => {
+      if (data.date === today())
+        return `${selectedTime}:00` >= new Date().toLocaleTimeString();
+      return true;
+    };
+
+    const finalTimeIsValid = (selectedTime) => {
+      return `${data.time}:00` <= `${selectedTime}:00`;
+    };
 
     const onSubmit = () => {
       eventForm.value.validate().then(async (success) => {
         if (success)
-          await store.addEvent(data).then(() => emit("onAddedEvent"));
+          await store.addEvent(data).then(() =>
+            emit("onEventTriggered", {
+              message: "Evento adicionado com sucesso!",
+              color: "positive",
+            })
+          );
       });
     };
 
@@ -145,8 +156,11 @@ export default defineComponent({
       eventForm,
       finalTime,
       data,
-      allowedColors,
-      allowedIcons,
+      colors,
+      icons,
+      dateIsValid,
+      timeIsValid,
+      finalTimeIsValid,
       onSubmit,
     };
   },
