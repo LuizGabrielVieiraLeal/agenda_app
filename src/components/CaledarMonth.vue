@@ -1,11 +1,6 @@
 <template>
-  <div class="subcontent">
-    <navigation-bar
-      :selectedDate="selectedDate"
-      @today="onToday"
-      @prev="onPrev"
-      @next="onNext"
-    >
+  <div>
+    <navigation-bar @today="onToday" @prev="onPrev" @next="onNext">
       <span class="navigation-label">{{ navigationLabel }}</span>
     </navigation-bar>
     <div class="row q-pa-sm">
@@ -24,12 +19,8 @@
           :day-height="0"
           :min-weeks="6"
           @change="onChange"
-          @moved="onMoved"
           @click-date="onClickDate"
           @click-day="onClickDay"
-          @click-workweek="onClickWorkweek"
-          @click-head-workweek="onClickHeadWorkweek"
-          @click-head-day="onClickHeadDay"
         >
           <template #day="{ scope: { timestamp } }">
             <template
@@ -42,6 +33,35 @@
         </q-calendar-month>
       </div>
     </div>
+    <q-dialog
+      v-model="dialog"
+      transition-show="rotate"
+      transition-hide="rotate"
+    >
+      <q-card class="card-dialog-medium">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">
+            <q-icon name="add_circle_outline" class="q-mr-sm q-mb-xs" />Novo
+            evento
+          </div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <EventForm @onEventTriggered="eventTriggered" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn
+        fab
+        icon="bi-plus-lg"
+        color="white"
+        class="text-black"
+        @click="dialog = true"
+      />
+    </q-page-sticky>
   </div>
 </template>
 
@@ -58,8 +78,10 @@ import {
 } from "@quasar/quasar-ui-qcalendar/src/index.js";
 import NavigationBar from "./NavigationBar.vue";
 import EventContainer from "./EventContainer.vue";
+import EventForm from "./EventForm.vue";
 import { mapState } from "pinia";
 import { calendarStore } from "../stores/calendar";
+import { Notify } from "quasar";
 
 export default defineComponent({
   name: "CalendarMonth",
@@ -67,10 +89,12 @@ export default defineComponent({
     QCalendarMonth,
     NavigationBar,
     EventContainer,
+    EventForm,
   },
   data: () => ({
     selectedDate: today(),
     navigationLabel: "",
+    dialog: false,
   }),
   computed: {
     ...mapState(calendarStore, {
@@ -109,9 +133,6 @@ export default defineComponent({
     onNext() {
       this.$refs.calendar.next();
     },
-    onMoved(data) {
-      console.log("onMoved", data);
-    },
     onChange() {
       const formatter = new Intl.DateTimeFormat("pt-BR", { month: "long" });
       const [year, month, day] = this.selectedDate.split("-");
@@ -126,14 +147,12 @@ export default defineComponent({
     onClickDay(data) {
       console.log("onClickDay", data);
     },
-    onClickWorkweek(data) {
-      console.log("onClickWorkweek", data);
-    },
-    onClickHeadDay(data) {
-      console.log("onClickHeadDay", data);
-    },
-    onClickHeadWorkweek(data) {
-      console.log("onClickHeadWorkweek", data);
+    eventTriggered(response) {
+      this.dialog = false;
+      Notify.create({
+        message: response.message,
+        color: response.color,
+      });
     },
   },
 });

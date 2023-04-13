@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { today } from "@quasar/quasar-ui-qcalendar/src/index.js";
 
 export const calendarStore = defineStore("calendar", {
   state: () => ({
@@ -31,6 +30,18 @@ export const calendarStore = defineStore("calendar", {
       "light_mode",
       "celebration",
       "cake",
+      "pets",
+      "style",
+      "savings",
+      "room",
+      "pending",
+      "record_voice_over",
+      "sports_esports",
+      "restaurant",
+      "diversity_1",
+      "fastfood",
+      "airport_shuttle",
+      "sports_bar",
     ],
     _events: [
       {
@@ -142,6 +153,7 @@ export const calendarStore = defineStore("calendar", {
   },
   actions: {
     async addEvent(event) {
+      console.log(event);
       // removendo chaves nulas do objeto por causa do bug do QCalendar
       for (const [key, value] of Object.entries(event))
         if (value === null) delete event[key];
