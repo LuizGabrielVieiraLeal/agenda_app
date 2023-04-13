@@ -1,7 +1,9 @@
 import { defineStore } from "pinia";
+import { today } from "@quasar/quasar-ui-qcalendar/src/index.js";
 
 export const calendarStore = defineStore("calendar", {
   state: () => ({
+    _locale: "pt-BR",
     _allowedColors: [
       "blue",
       "indigo",
@@ -133,6 +135,7 @@ export const calendarStore = defineStore("calendar", {
     ],
   }),
   getters: {
+    getLocale: (state) => state._locale,
     getAllowedColors: (state) => state._allowedColors,
     getAllowedIcons: (state) => state._allowedIcons,
     getEvents: (state) => state._events,

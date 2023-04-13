@@ -69,13 +69,13 @@ export default defineComponent({
     EventContainer,
   },
   data: () => ({
-    locale: "pt-BR",
     selectedDate: today(),
     navigationLabel: "",
   }),
   computed: {
     ...mapState(calendarStore, {
       events: (store) => store.getEvents,
+      locale: (store) => store.getLocale,
     }),
 
     eventsMap() {

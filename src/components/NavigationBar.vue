@@ -12,16 +12,6 @@
         <q-icon name="chevron_right" size="sm" />
       </q-btn>
       <slot></slot>
-      <q-btn round flat size="xs" class="q-ml-sm">
-        <q-icon name="expand_more" size="sm" />
-        <q-menu>
-          <q-date
-            v-model="date"
-            :events="eventsDate"
-            event-color="warning"
-            minimal
-        /></q-menu>
-      </q-btn>
       <template v-for="n in 5" :key="n">
         <q-space />
       </template>
@@ -32,25 +22,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from "vue";
-import { calendarStore } from "../stores/calendar";
+import { defineComponent } from "vue";
 
-export default defineComponent({
-  props: {
-    selectedDate: { type: String, required: true },
-  },
-  setup(props) {
-    const store = calendarStore();
-    const events = store.getEvents;
-    const date = props.selectedDate.replaceAll("-", "/");
-    const eventsDate = computed(() =>
-      events.map((event) => event.date.replaceAll("-", "/"))
-    );
-
-    return {
-      date,
-      eventsDate,
-    };
-  },
-});
+export default defineComponent({});
 </script>
