@@ -7,10 +7,37 @@
       :selected-date="selectedDate"
     />
     <div class="row q-pa-sm">
-      <div class="col-xs-12">
+      <div class="col-xs-12 col-lg-3">
+        <q-calendar-day
+          ref="calendarDay"
+          :locale="this.$q.lang.isoName"
+          v-model="selectedDate"
+          view="day"
+          :interval-height="33.75"
+          bordered
+          animated
+          no-active-date
+          hour24-format
+          @change="onChange"
+          @moved="onMoved"
+          @click-date="onClickDate"
+          @click-time="onClickTime"
+          @click-interval="onClickInterval"
+          @click-head-intervals="onClickHeadIntervals"
+          @click-head-day="onClickHeadDay"
+        >
+          <template #day-container="{ scope: { days } }">
+            <template v-if="hasDate(days)">
+              <div class="day-view-current-time-indicator" :style="style" />
+              <div class="day-view-current-time-line" :style="style" />
+            </template>
+          </template>
+        </q-calendar-day>
+      </div>
+      <div class="col-xs-12 col-lg-9">
         <q-calendar-month
-          ref="calendar"
-          :locale="locale"
+          ref="calendarMonth"
+          :locale="this.$q.lang.isoName"
           v-model="selectedDate"
           bordered
           animated
@@ -25,43 +52,31 @@
           @click-day="onClickDay"
         >
           <template #day="{ scope: { timestamp } }">
-            <template
-              v-for="event in eventsMap[timestamp.date]"
-              :key="event.id"
-            >
+            <template v-for="event in events[timestamp.date]" :key="event.id">
               <event-container :event="event" />
             </template>
           </template>
         </q-calendar-month>
       </div>
     </div>
-    <q-dialog
-      v-model="dialog"
+    <custom-dialog
+      ref="addEventDialog"
+      prev-icon="add_circle_outline"
+      header-text="Novo Evento"
       transition-show="rotate"
       transition-hide="rotate"
     >
-      <q-card class="card-dialog-medium">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">
-            <q-icon name="add_circle_outline" class="q-mr-sm q-mb-xs" />Novo
-            evento
-          </div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <EventForm @onEventTriggered="eventTriggered" />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+      <template v-slot:body>
+        <event-form onEventTriggered="eventTriggered" />
+      </template>
+    </custom-dialog>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn
         fab
         icon="bi-plus-lg"
         color="white"
         class="text-black text-bold"
-        @click="dialog = true"
+        @click="this.$refs.addEventDialog?.toogleDialog"
       />
     </q-page-sticky>
   </q-page>
@@ -72,81 +87,60 @@ import { defineComponent } from "vue";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarMonth.sass";
+import "@quasar/quasar-ui-qcalendar/src/QCalendarDay.sass";
 import {
+  QCalendarDay,
   QCalendarMonth,
   today,
-  addToDate,
-  parseTimestamp,
 } from "@quasar/quasar-ui-qcalendar/src/index.js";
-import NavigationBar from "../components/NavigationBar.vue";
-import EventContainer from "../components/EventContainer.vue";
-import EventForm from "../components/EventForm.vue";
+import NavigationBar from "../components/navigation/NavigationBar.vue";
+import EventContainer from "../components/event/EventContainer.vue";
+import CustomDialog from "../components/shared/CustomDialog.vue";
+import EventForm from "../components/event/EventForm.vue";
 import { mapState } from "pinia";
 import { calendarStore } from "../stores/calendar";
-import { Notify } from "quasar";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
+    QCalendarDay,
     QCalendarMonth,
     NavigationBar,
     EventContainer,
+    CustomDialog,
     EventForm,
   },
   data: () => ({
     selectedDate: today(),
-    navigationLabel: "",
-    dialog: false,
+    currentDate: null,
+    currentTime: null,
   }),
   computed: {
     ...mapState(calendarStore, {
-      events: (store) => store.getEvents,
+      events: (store) => store.getMonthEvents,
       locale: (store) => store.getLocale,
     }),
-
-    eventsMap() {
-      const map = {};
-      if (this.events.length > 0) {
-        this.events.forEach((event) => {
-          (map[event.date] = map[event.date] || []).push(event);
-          if (event.days !== undefined) {
-            let timestamp = parseTimestamp(event.date);
-            let days = event.days;
-            do {
-              timestamp = addToDate(timestamp, { day: 1 });
-              if (!map[timestamp.date]) {
-                map[timestamp.date] = [];
-              }
-              map[timestamp.date].push(event);
-            } while (--days > 1);
-          }
-        });
-      }
-      return map;
-    },
   },
   methods: {
+    hasDate(days) {
+      return this.currentDate
+        ? days.find((day) => day.date === this.currentDate)
+        : false;
+    },
     onToday() {
-      this.$refs.calendar.moveToToday();
+      this.$refs.calendarMonth.moveToToday();
     },
     onPrev() {
-      this.$refs.calendar.prev();
+      this.$refs.calendarMonth.prev();
     },
     onNext() {
-      this.$refs.calendar.next();
+      this.$refs.calendarMonth.next();
     },
     onClickDate(data) {
       console.log("onClickDate", data);
     },
     onClickDay(data) {
       console.log("onClickDay", data);
-    },
-    eventTriggered(response) {
-      this.dialog = false;
-      Notify.create({
-        message: response.message,
-        color: response.color,
-      });
     },
   },
 });

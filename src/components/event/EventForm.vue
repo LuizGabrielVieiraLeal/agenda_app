@@ -157,87 +157,77 @@
   </q-form>
 </template>
 
-<script>
-import { defineComponent, reactive, ref } from "vue";
-import { calendarStore } from "../stores/calendar";
+<script setup>
+import { reactive, ref } from "vue";
+import { calendarStore } from "../../stores/calendar";
 import { today } from "@quasar/quasar-ui-qcalendar/src";
+import { Notify } from "quasar";
 
-export default defineComponent({
-  name: "EventForm",
-  emits: ["onEventTriggered"],
-  setup(_, { emit }) {
-    const store = calendarStore();
-    const colors = store.getAllowedColors;
-    const icons = store.getAllowedIcons;
+const store = calendarStore();
+const colors = store.getAllowedColors;
+const icons = store.getAllowedIcons;
 
-    const eventForm = ref(null),
-      finalTime = ref(null),
-      step = ref(1);
+const eventForm = ref(null),
+  finalTime = ref(null),
+  step = ref(1);
 
-    const data = reactive({
-      title: "",
-      details: "",
-      date: "",
-      time: null,
-      duration: null,
-      bgcolor: "blue",
-      icon: null,
-      days: 0,
-    });
-
-    const dateIsValid = (selectedDate) => {
-      const currentDate = today();
-      return selectedDate >= currentDate;
-    };
-
-    const timeIsValid = (selectedTime) => {
-      if (data.date === today())
-        return `${selectedTime}:00` >= new Date().toLocaleTimeString();
-      return true;
-    };
-
-    const finalTimeIsValid = (selectedFinalTime) => {
-      if (data.time && selectedFinalTime) return data.time < selectedFinalTime;
-      return true;
-    };
-
-    const validate = () => {
-      eventForm.value.validate().then((success) => {
-        if (success) step.value = 2;
-      });
-    };
-
-    const onSubmit = async () => {
-      if (data.days === 0) data.days = null;
-
-      if (data.time && finalTime.value) {
-        const startTime = new Date(`${data.date}T${data.time}:00`);
-        const endTime = new Date(`${data.date}T${finalTime.value}:00`);
-        const difMs = endTime.getTime() - startTime.getTime();
-        data.duration = difMs / 60000;
-      }
-
-      await store.addEvent(data).then(() =>
-        emit("onEventTriggered", {
-          message: "Evento adicionado com sucesso!",
-          color: "positive",
-        })
-      );
-    };
-
-    return {
-      eventForm,
-      data,
-      finalTime,
-      step,
-      colors,
-      icons,
-      dateIsValid,
-      timeIsValid,
-      finalTimeIsValid,
-      validate,
-      onSubmit,
-    };
-  },
+const data = reactive({
+  title: "",
+  details: "",
+  date: "",
+  time: null,
+  duration: null,
+  bgcolor: "blue",
+  icon: null,
+  days: 0,
 });
+
+const dateIsValid = (selectedDate) => {
+  const currentDate = today();
+  return selectedDate >= currentDate;
+};
+
+const timeIsValid = (selectedTime) => {
+  if (data.date === today())
+    return `${selectedTime}:00` >= new Date().toLocaleTimeString();
+  return true;
+};
+
+const finalTimeIsValid = (selectedFinalTime) => {
+  if (data.time && selectedFinalTime) return data.time < selectedFinalTime;
+  return true;
+};
+
+const validate = () => {
+  eventForm.value.validate().then((success) => {
+    if (success) step.value = 2;
+  });
+};
+
+const onReset = () => {
+  data.title = data.details = data.date = "";
+  data.time = data.duration = data.icon = null;
+  data.bgcolor = "blue";
+  data.days = 0;
+  step.value = 1;
+};
+
+const onSubmit = async () => {
+  if (data.days === 0) data.days = null;
+
+  if (data.time && finalTime.value) {
+    const startTime = new Date(`${data.date}T${data.time}:00`);
+    const endTime = new Date(`${data.date}T${finalTime.value}:00`);
+    const difMs = endTime.getTime() - startTime.getTime();
+    data.duration = difMs / 60000;
+  }
+
+  await store.addEvent(Object.assign({}, data)).then(() => {
+    onReset();
+    Notify.create({
+      message: "Evento criado com sucesso!",
+      color: "positive",
+    });
+  });
+};
 </script>

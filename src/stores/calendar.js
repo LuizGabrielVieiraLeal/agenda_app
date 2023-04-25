@@ -1,8 +1,11 @@
 import { defineStore } from "pinia";
+import {
+  addToDate,
+  parseTimestamp,
+} from "@quasar/quasar-ui-qcalendar/src/index.js";
 
 export const calendarStore = defineStore("calendar", {
   state: () => ({
-    _locale: "pt-BR",
     _allowedColors: [
       "blue",
       "indigo",
@@ -46,10 +49,29 @@ export const calendarStore = defineStore("calendar", {
     _events: [],
   }),
   getters: {
-    getLocale: (state) => state._locale,
     getAllowedColors: (state) => state._allowedColors,
     getAllowedIcons: (state) => state._allowedIcons,
     getEvents: (state) => state._events,
+    getMonthEvents: (state) => {
+      const map = {};
+      if (state._events.length > 0) {
+        state._events.forEach((event) => {
+          (map[event.date] = map[event.date] || []).push(event);
+          if (event.days !== undefined) {
+            let timestamp = parseTimestamp(event.date);
+            let days = event.days;
+            do {
+              timestamp = addToDate(timestamp, { day: 1 });
+              if (!map[timestamp.date]) {
+                map[timestamp.date] = [];
+              }
+              map[timestamp.date].push(event);
+            } while (--days > 1);
+          }
+        });
+      }
+      return map;
+    },
   },
   actions: {
     async addEvent(event) {
