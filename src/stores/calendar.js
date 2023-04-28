@@ -4,55 +4,19 @@ import {
   parseTimestamp,
 } from "@quasar/quasar-ui-qcalendar/src/index.js";
 
+function _removeNullEntries(obj) {
+  // removendo chaves nulas do objeto por causa do bug do QCalendar
+  for (const [key, value] of Object.entries(obj))
+    if (value === null) delete obj[key];
+  return obj;
+}
+
 export const calendarStore = defineStore("calendar", {
   state: () => ({
-    _allowedColors: [
-      "blue",
-      "indigo",
-      "green",
-      "cyan",
-      "red",
-      "pink",
-      "purple",
-      "yellow",
-      "orange",
-      "brown",
-      "grey",
-      "dark",
-    ],
-    _allowedIcons: [
-      "favorite",
-      "auto_stories",
-      "grade",
-      "flight_takeoff",
-      "fitness_center",
-      "textsms",
-      "work",
-      "bookmark",
-      "warning",
-      "light_mode",
-      "celebration",
-      "cake",
-      "pets",
-      "style",
-      "savings",
-      "room",
-      "pending",
-      "record_voice_over",
-      "sports_esports",
-      "restaurant",
-      "diversity_1",
-      "fastfood",
-      "airport_shuttle",
-      "sports_bar",
-    ],
     _events: [],
   }),
   getters: {
-    getAllowedColors: (state) => state._allowedColors,
-    getAllowedIcons: (state) => state._allowedIcons,
-    getEvents: (state) => state._events,
-    getMonthEvents: (state) => {
+    getEvents: (state) => {
       const map = {};
       if (state._events.length > 0) {
         state._events.forEach((event) => {
@@ -74,11 +38,21 @@ export const calendarStore = defineStore("calendar", {
     },
   },
   actions: {
-    async addEvent(event) {
-      // removendo chaves nulas do objeto por causa do bug do QCalendar
-      for (const [key, value] of Object.entries(event))
-        if (value === null) delete event[key];
-      this._events.push(event);
+    async addEvent(data) {
+      // adicionando id para terminar o CRUD
+      data["id"] = this._events.length + 1;
+      this._events.push(_removeNullEntries(data));
+    },
+    async updateEvent(event, data) {
+      this._events[this._events.findIndex((e) => e.id === event.id)] = {
+        ..._removeNullEntries(data),
+      };
+    },
+    async removeEvent(id) {
+      this._events.splice(
+        this._events.findIndex((e) => e.id === id),
+        1
+      );
     },
   },
 });

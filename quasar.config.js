@@ -100,7 +100,48 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
     framework: {
-      config: {},
+      config: {
+        allowedEventColors: [
+          "blue",
+          "indigo",
+          "green",
+          "cyan",
+          "red",
+          "pink",
+          "purple",
+          "yellow",
+          "orange",
+          "brown",
+          "grey",
+          "dark",
+        ],
+        allowedEventsIcons: [
+          "favorite",
+          "auto_stories",
+          "grade",
+          "flight_takeoff",
+          "fitness_center",
+          "textsms",
+          "work",
+          "bookmark",
+          "warning",
+          "light_mode",
+          "celebration",
+          "cake",
+          "pets",
+          "style",
+          "savings",
+          "room",
+          "pending",
+          "record_voice_over",
+          "sports_esports",
+          "restaurant",
+          "diversity_1",
+          "fastfood",
+          "airport_shuttle",
+          "sports_bar",
+        ],
+      },
 
       // iconSet: 'material-icons', // Quasar icon set
       lang: "pt-BR", // Quasar language pack

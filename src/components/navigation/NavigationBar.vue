@@ -1,6 +1,6 @@
 <template>
   <q-header>
-    <q-toolbar class="bg-white text-black q-py-sm shadow-1">
+    <q-toolbar class="bg-white text-black shadow-1">
       <q-toolbar-title class="text-bold">
         <q-icon name="bi-calendar-event" />
       </q-toolbar-title>
@@ -12,16 +12,6 @@
         <q-icon name="chevron_right" size="sm" />
       </q-btn>
       <span class="navigation-label">{{ setLabel() }}</span>
-      <template v-for="n in 6" :key="n">
-        <q-space />
-      </template>
-      <q-icon name="bi-github" size="1.1em" />
-      <a
-        href="https://github.com/LuizGabrielVieiraLeal/agenda_app"
-        target="_blank"
-        class="text-black text-bold github-link q-ml-sm"
-        >v1.0.0</a
-      >
     </q-toolbar>
   </q-header>
 </template>

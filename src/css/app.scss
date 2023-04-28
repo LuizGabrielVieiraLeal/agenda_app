@@ -9,8 +9,13 @@
   max-width: 80vw;
 }
 
+.card-dialog-small {
+  width: 400px;
+  max-width: 50vw;
+}
+
 // Events
-.my-event {
+.calendar-month-event {
   position: relative;
   font-size: 12px;
   width: 100%;
@@ -18,6 +23,32 @@
   justify-content: center;
   text-overflow: ellipsis;
   overflow: hidden;
+  cursor: pointer;
+}
+
+.calendar-day-event {
+  position: absolute;
+  font-size: 12px;
+  justify-content: center;
+  margin: 0 1px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.calendar-badge-header-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 2px;
+}
+
+.calendar-badge-header {
+  margin: 1px;
+  width: 10px;
+  max-width: 10px;
+  height: 10px;
+  max-height: 10px;
   cursor: pointer;
 }
 

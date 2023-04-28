@@ -1,9 +1,10 @@
 <template>
   <q-dialog
     v-model="dialog"
-    :transition-show="transitionShow"
-    :transition-hide="transitionHide"
+    :transition-show="transitionShow ? transitionShow : 'scale'"
+    :transition-hide="transitionHide ? transitionHide : 'scale'"
     :seamless="seamless"
+    :persistent="persistent"
     :position="position"
   >
     <q-card :class="`card-dialog-${size}`">
@@ -38,9 +39,10 @@
 import { ref } from "vue";
 
 const props = defineProps({
-  transitionHide: { type: String, default: "fade" },
-  transitionShow: { type: String, default: "fade" },
+  transitionHide: { type: String, default: null },
+  transitionShow: { type: String, default: null },
   seamless: { type: Boolean, default: false },
+  persistent: { type: Boolean, default: false },
   position: { type: String, default: "standard" },
   size: { type: String, default: "medium" },
   prevIcon: { type: String, default: null },
@@ -49,7 +51,7 @@ const props = defineProps({
 
 const dialog = ref(false);
 
-const toogleDialog = (value = false) => (dialog.value = !dialog.value);
+const toogleDialog = () => (dialog.value = !dialog.value);
 
 defineExpose({ toogleDialog });
 </script>
