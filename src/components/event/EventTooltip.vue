@@ -1,14 +1,12 @@
 <template>
   <q-tooltip>
-    <p class="text-bold">Evento: {{ event.title }}</p>
-    <p v-if="event.time" class="q-pa-none q-ma-none text-bold">
-      Início: {{ event.time }}
-    </p>
-    <p v-if="event.duration" class="text-bold">
+    <p class="text-bold q-pa-none q-ma-none">Evento: {{ event.title }}</p>
+    <p class="text-bold q-pa-none q-ma-none">Início: {{ event.time }}</p>
+    <p v-if="event.duration" class="text-bold q-pa-none q-ma-none">
       Duração estimada: {{ formattedDuration() }}
     </p>
     <p v-if="event.details" class="q-pb-none q-mb-none text-bold">Detalhes:</p>
-    <p v-if="event.details">{{ event.details }}</p>
+    <p v-if="event.details" class="q-pa-none q-ma-none">{{ event.details }}</p>
   </q-tooltip>
 </template>
 

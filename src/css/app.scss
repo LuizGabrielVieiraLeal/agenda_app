@@ -3,6 +3,21 @@
   text-decoration: none;
 }
 
+// NavigationBar
+.icon-label {
+  font-size: 15px;
+  position: relative;
+  left: -24px;
+  top: 4px;
+}
+
+.text-label {
+  font-size: 22px;
+  position: relative;
+  top: 4px;
+  left: -10px;
+}
+
 // Dialogs
 .card-dialog-medium {
   width: 700px;

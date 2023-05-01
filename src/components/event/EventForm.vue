@@ -21,6 +21,7 @@
                 v-model="data.title"
                 filled
                 label="Título*"
+                lazy-rules
                 :rules="[
                   (val) => !!val || 'O preenchimento deste campo é necessário',
                 ]"
@@ -40,6 +41,7 @@
                 filled
                 type="date"
                 label="Data*"
+                lazy-rules
                 :rules="[
                   (val) => !!val || 'O preenchimento deste campo é necessário',
                   (val) => dateIsValid(val) || 'Data inválida',
@@ -52,6 +54,7 @@
                 filled
                 type="time"
                 label="Horário inicial*"
+                lazy-rules
                 :rules="[(val) => (val && timeIsValid(val)) || 'Hora inválida']"
               />
             </div>
@@ -61,6 +64,7 @@
                 filled
                 type="time"
                 label="Horário final"
+                lazy-rules
                 :rules="[(val) => finalTimeIsValid(val) || 'Hora inválida']"
               />
             </div>

@@ -13,7 +13,7 @@ export default defineComponent({
   name: "MainLayout",
   created() {
     // remover quando fizer o login
-    this.$router.push("agenda");
+    this.$router.push("login");
   },
 });
 </script>

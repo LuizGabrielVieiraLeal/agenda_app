@@ -15,7 +15,6 @@
           animated
           focusable
           hoverable
-          no-active-date
           use-navigation
           :min-weeks="6"
           class="full-height"
@@ -36,7 +35,6 @@
           v-model="selectedDate"
           view="day"
           animated
-          no-active-date
           hour24-format
           class="full-height"
         >
@@ -82,16 +80,16 @@
       <q-btn
         fab
         icon="bi-plus-lg"
-        color="white"
-        class="text-black text-bold"
-        @click="this.$refs.customDialog?.toogleDialog"
+        color="primary"
+        class="text-bold"
+        @click="toogleDialog"
       />
     </q-page-sticky>
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from "vue";
+<script setup>
+import { ref, computed } from "vue";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarMonth.sass";
@@ -106,44 +104,37 @@ import EventContainer from "../components/event/EventContainer.vue";
 import EventTooltip from "../components/event/EventTooltip.vue";
 import CustomDialog from "../components/shared/CustomDialog.vue";
 import EventForm from "../components/event/EventForm.vue";
-import { mapState } from "pinia";
 import { calendarStore } from "../stores/calendar";
 
-export default defineComponent({
-  name: "IndexPage",
-  components: {
-    QCalendarDay,
-    QCalendarMonth,
-    NavigationBar,
-    EventContainer,
-    EventTooltip,
-    CustomDialog,
-    EventForm,
-  },
-  data: () => ({
-    selectedDate: today(),
-  }),
-  computed: {
-    ...mapState(calendarStore, {
-      events: (store) => store.getEvents,
-    }),
-  },
-  methods: {
-    onToday() {
-      this.$refs.calendarMonth.moveToToday();
-    },
-    onPrev() {
-      this.$refs.calendarMonth.prev();
-    },
-    onNext() {
-      this.$refs.calendarMonth.next();
-    },
-    onClickDate(data) {
-      this.selectedDate = data.scope.timestamp.date;
-    },
-    onClickDay(data) {
-      this.selectedDate = data.scope.timestamp.date;
-    },
-  },
-});
+const store = calendarStore();
+const events = computed(() => store.getEvents);
+
+const calendarMonth = ref(null);
+const customDialog = ref(null);
+
+const selectedDate = ref(today());
+
+const onToday = () => {
+  calendarMonth.value.moveToToday();
+};
+
+const onPrev = () => {
+  calendarMonth.value.prev();
+};
+
+const onNext = () => {
+  calendarMonth.value.next();
+};
+
+const onClickDate = (data) => {
+  selectedDate.value = data.scope.timestamp.date;
+};
+
+const onClickDay = (data) => {
+  selectedDate.value = data.scope.timestamp.date;
+};
+
+const toogleDialog = () => {
+  customDialog.value?.toogleDialog();
+};
 </script>
