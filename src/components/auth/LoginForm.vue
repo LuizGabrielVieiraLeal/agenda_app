@@ -43,7 +43,11 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
+import { userStore } from "../../stores/user";
+import { Notify } from "quasar";
+
 const router = useRouter();
+const store = userStore();
 
 const loginForm = ref(null);
 
@@ -55,6 +59,19 @@ const data = reactive({
 const keepConnected = ref(false);
 
 const onSubmit = () => {
-  router.push("agenda");
+  loginForm.value
+    .validate()
+    .then(async (success) => {
+      if (success)
+        await store
+          .signIn(data, keepConnected)
+          .then(() => router.push("agenda"));
+    })
+    .catch((ex) => {
+      Notify.create({
+        message: ex.response.data.error,
+        color: "negative",
+      });
+    });
 };
 </script>

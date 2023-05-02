@@ -1,5 +1,3 @@
-const isAuthenticated = false;
-
 const routes = [
   {
     path: "/",

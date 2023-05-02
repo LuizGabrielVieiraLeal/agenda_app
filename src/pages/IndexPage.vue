@@ -79,7 +79,7 @@
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-btn
         fab
-        icon="bi-plus-lg"
+        icon="add"
         color="primary"
         class="text-bold"
         @click="toogleDialog"

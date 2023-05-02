@@ -99,7 +99,7 @@
             >
               <div class="row">
                 <div class="col-6">
-                  <q-radio v-model="data.bgcolor" :val="color" />
+                  <q-radio v-model="data.color" :val="color" />
                 </div>
                 <div class="col-6 q-pt-xs">
                   <q-badge :color="color" class="q-pa-lg q-mt-sm" />
@@ -248,7 +248,7 @@ const data = reactive({
   date: props.event?.date || "",
   time: props.event?.time || null,
   duration: props.event?.duration || null,
-  bgcolor: props.event?.bgcolor || "blue",
+  color: props.event?.color || "blue",
   icon: props.event?.icon || null,
   days: props.event?.days || 0,
 });
@@ -278,7 +278,7 @@ const validate = () => {
 const onReset = () => {
   data.title = data.details = data.date = "";
   data.time = data.duration = data.icon = null;
-  data.bgcolor = "blue";
+  data.color = "blue";
   data.days = 0;
   step.value = 1;
 };

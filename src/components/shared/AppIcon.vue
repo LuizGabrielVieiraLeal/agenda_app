@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <q-icon size="md" color="primary" name="calendar_today" />
-    <span class="icon-label text-bold text-primary">{{ day }}</span>
-    <span class="text-bold text-label text-primary">Agenda Simples</span>
-  </div>
+  <q-img
+    src="../../assets/calendar.png"
+    :ratio="1"
+    no-spinner
+    style="height: 40px; max-width: 40px"
+  />
+  <span class="icon-label text-bold text-primary">{{ day }}</span>
 </template>
 
 <script setup>

@@ -11,7 +11,7 @@
 const { configure } = require("quasar/wrappers");
 const path = require("path");
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
   return {
     eslint: {
       // fix: true,
@@ -41,7 +41,7 @@ module.exports = configure(function (/* ctx */) {
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
-      "bootstrap-icons",
+      // "bootstrap-icons",
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       "roboto-font", // optional, you are not bound to it
@@ -90,6 +90,13 @@ module.exports = configure(function (/* ctx */) {
           },
         ],
       ],
+
+      env: {
+        storageName: "agendasimples",
+        baseURL: ctx.dev
+          ? "http://localhost:3000/api/v1"
+          : "http://localhost:3000/api/v1",
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -154,7 +161,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ["Notify"],
+      plugins: ["Notify", "LocalStorage", "SessionStorage"],
     },
 
     // animations: 'all', // --- includes all animations

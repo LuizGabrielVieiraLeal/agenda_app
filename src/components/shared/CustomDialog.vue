@@ -7,7 +7,7 @@
     :persistent="persistent"
     :position="position"
   >
-    <q-card :class="`card-dialog-${size}`">
+    <q-card :class="`card-${size}`">
       <q-card-section v-if="headerText" class="row items-center q-pb-none">
         <div class="text-h6">
           <q-icon v-if="prevIcon" :name="prevIcon" class="q-mr-sm q-mb-xs" />{{

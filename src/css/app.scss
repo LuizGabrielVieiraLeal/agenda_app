@@ -7,24 +7,17 @@
 .icon-label {
   font-size: 15px;
   position: relative;
-  left: -24px;
-  top: 4px;
-}
-
-.text-label {
-  font-size: 22px;
-  position: relative;
-  top: 4px;
-  left: -10px;
+  left: -28px;
+  top: 6px;
 }
 
 // Dialogs
-.card-dialog-medium {
+.card-medium {
   width: 700px;
   max-width: 80vw;
 }
 
-.card-dialog-small {
+.card-small {
   width: 400px;
   max-width: 50vw;
 }

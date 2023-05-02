@@ -15,7 +15,7 @@
     v-else
     @click="toogleCustomDialog"
     class="calendar-day-event"
-    :class="`text-white bg-${event.bgcolor} full-width`"
+    :class="`text-white bg-${event.color} full-width`"
     :style="badgeStyles(event, timeStartPos, timeDurationHeight)"
   >
     <div class="title q-calendar__ellipsis">
@@ -57,7 +57,7 @@ const toogleCustomDialog = () => {
 
 const containerClasses = () => {
   return {
-    [`text-white bg-${props.event.bgcolor}`]: true,
+    [`text-white bg-${props.event.color}`]: true,
     "rounded-border": true,
   };
 };

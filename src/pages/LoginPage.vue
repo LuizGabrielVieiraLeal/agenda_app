@@ -8,11 +8,14 @@
         <q-card
           square
           class="shadow-24"
-          style="width: 400px; max-height: 540px"
+          style="max-width: 350px; max-height: 540px"
         >
           <q-card-section>
-            <div class="row justify-center items-center q-pt-xl q-pb-lg">
+            <div class="row justify-center items-center q-pt-lg q-pb-sm">
               <app-icon />
+              <span class="text-bold text-primary text-h5 q-mt-sm"
+                >Agenda Simples</span
+              >
             </div>
           </q-card-section>
           <q-card-section>

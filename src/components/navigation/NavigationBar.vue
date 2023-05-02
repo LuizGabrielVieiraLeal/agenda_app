@@ -5,17 +5,10 @@
         <app-icon />
       </q-toolbar-title>
       <q-btn flat color="primary" @click="$emit('today')"> Hoje </q-btn>
-      <q-btn round flat color="primary" size="xs" @click="$emit('prev')">
+      <q-btn round flat size="xs" @click="$emit('prev')">
         <q-icon name="chevron_left" size="sm" />
       </q-btn>
-      <q-btn
-        round
-        flat
-        color="primary"
-        size="xs"
-        class="q-mr-md"
-        @click="$emit('next')"
-      >
+      <q-btn round flat size="xs" class="q-mr-md" @click="$emit('next')">
         <q-icon name="chevron_right" size="sm" />
       </q-btn>
       <span class="navigation-label text-bold">{{ setLabel() }}</span>
