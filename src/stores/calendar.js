@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
+import axios from "axios";
 import {
   addToDate,
   parseTimestamp,
 } from "@quasar/quasar-ui-qcalendar/src/index.js";
 
 function _removeNullEntries(obj) {
-  // removendo chaves nulas do objeto por causa do bug do QCalendar
   for (const [key, value] of Object.entries(obj))
     if (value === null) delete obj[key];
   return obj;
@@ -20,6 +20,7 @@ export const calendarStore = defineStore("calendar", {
       const map = {};
       if (state._events.length > 0) {
         state._events.forEach((event) => {
+          event = _removeNullEntries(event);
           (map[event.date] = map[event.date] || []).push(event);
           if (event.days !== undefined) {
             let timestamp = parseTimestamp(event.date);
@@ -38,10 +39,21 @@ export const calendarStore = defineStore("calendar", {
     },
   },
   actions: {
+    async loadEvents() {
+      await axios
+        .get(`${process.env.baseURL}/events`)
+        .then((res) => (this._events = res.data.events))
+        .catch((ex) => {
+          throw ex;
+        });
+    },
     async addEvent(data) {
-      // adicionando id para terminar o CRUD
-      data["id"] = this._events.length + 1;
-      this._events.push(_removeNullEntries(data));
+      await axios
+        .post(`${process.env.baseURL}/events`, { event: data })
+        .then((res) => this._events.push(_removeNullEntries(res.data.event)))
+        .catch((ex) => {
+          throw ex;
+        });
     },
     async updateEvent(event, data) {
       this._events[this._events.findIndex((e) => e.id === event.id)] = {

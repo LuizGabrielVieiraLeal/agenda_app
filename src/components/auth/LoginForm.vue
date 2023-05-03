@@ -30,6 +30,7 @@
     </div>
     <div class="row">
       <q-btn
+        :loading="loading"
         size="lg"
         type="submit"
         color="secondary"
@@ -57,11 +58,13 @@ const data = reactive({
 });
 
 const keepConnected = ref(false);
+const loading = ref(false);
 
 const onSubmit = () => {
   loginForm.value
     .validate()
     .then(async (success) => {
+      loading.value = true;
       if (success)
         await store
           .signIn(data, keepConnected)
@@ -73,5 +76,6 @@ const onSubmit = () => {
         color: "negative",
       });
     });
+  loading.value = false;
 };
 </script>

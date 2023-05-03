@@ -12,6 +12,24 @@ export const userStore = defineStore("user", {
     getToken: (state) => state._token,
   },
   actions: {
+    loadUser() {
+      if (this._currentUser === null || this._token === null) {
+        const sessionData = SessionStorage.getItem(process.env.storageName);
+        const localData = LocalStorage.getItem(process.env.storageName);
+
+        if (sessionData !== null) {
+          this._currentUser = sessionData.currentUser;
+          this._token = sessionData.token;
+        }
+
+        if (localData !== null) {
+          this._currentUser = localData.currentUser;
+          this._token = localData.token;
+        }
+
+        axios.defaults.headers.common["Authorization"] = this._token;
+      }
+    },
     async signIn(data, keepConnected) {
       await axios
         .post(`${process.env.baseURL}/login`, { user: data })
@@ -30,6 +48,7 @@ export const userStore = defineStore("user", {
               token: this._token,
             });
           }
+          axios.defaults.headers.common["Authorization"] = this._token;
         })
         .catch((ex) => {
           throw ex;

@@ -155,30 +155,39 @@
           </q-stepper-navigation>
         </q-step>
       </q-stepper>
-      <div class="row justify-end">
-        <q-btn
-          outline
-          color="primary"
-          label="Limpar"
-          icon="settings_backup_restore"
-          class="q-mr-sm"
-          @click="onReset"
-        />
-        <q-btn
-          v-if="event"
-          class="q-mr-sm"
-          color="negative"
-          label="Excluir"
-          icon="delete"
-          @click="toogleCustomDialog"
-        />
-        <q-btn
-          type="submit"
-          color="positive"
-          label="Salvar"
-          icon="save"
-          :disable="step < 2"
-        />
+      <div class="row">
+        <div v-if="event" class="col-6">
+          <q-btn
+            flat
+            class="full-width"
+            color="negative"
+            label="Excluir"
+            icon="delete"
+            @click="toogleCustomDialog"
+          />
+        </div>
+        <div v-else class="col-6">
+          <q-btn
+            flat
+            color="primary"
+            label="Limpar"
+            icon="settings_backup_restore"
+            class="full-width"
+            @click="onReset"
+          />
+        </div>
+        <div class="col-6">
+          <q-btn
+            flat
+            :loading="loading"
+            class="full-width"
+            type="submit"
+            color="positive"
+            :label="event ? 'Atualizar' : 'Salvar'"
+            icon="save"
+            :disable="step < 2"
+          />
+        </div>
       </div>
     </q-form>
     <custom-dialog
@@ -198,9 +207,9 @@
           </p>
         </div>
         <div class="row">
-          <div class="col-6 q-pr-xs">
+          <div class="col-6">
             <q-btn
-              outline
+              flat
               color="primary"
               label="Cancelar"
               icon="close"
@@ -208,8 +217,9 @@
               @click="toogleCustomDialog"
             />
           </div>
-          <div class="col-6 q-pl-xs">
+          <div class="col-6">
             <q-btn
+              flat
               color="negative"
               label="Remover"
               icon="delete"
@@ -225,6 +235,7 @@
 
 <script setup>
 import { reactive, ref } from "vue";
+import { userStore } from "../../stores/user";
 import { calendarStore } from "../../stores/calendar";
 import { today } from "@quasar/quasar-ui-qcalendar/src";
 import CustomDialog from "../shared/CustomDialog.vue";
@@ -236,13 +247,16 @@ const props = defineProps({
 
 const customDialog = ref(null);
 
-const store = calendarStore();
+const uStore = userStore();
+const cStore = calendarStore();
 
-const eventForm = ref(null),
-  finalTime = ref(null),
-  step = ref(1);
+const eventForm = ref(null);
+const finalTime = ref(null);
+const step = ref(1);
+const loading = ref(false);
 
 const data = reactive({
+  user_id: uStore.getUser.id,
   title: props.event?.title || "",
   details: props.event?.details || null,
   date: props.event?.date || "",
@@ -284,6 +298,7 @@ const onReset = () => {
 };
 
 const onSubmit = async () => {
+  loading.value = true;
   if (data.days === 0) data.days = null;
   if (!data.details || data.details.length === 0) data.details = null;
 
@@ -295,7 +310,7 @@ const onSubmit = async () => {
   }
 
   if (!props.event) {
-    await store.addEvent(Object.assign({}, data)).then(() => {
+    await cStore.addEvent(Object.assign({}, data)).then(() => {
       onReset();
       Notify.create({
         message: "Evento criado com sucesso!",
@@ -303,7 +318,7 @@ const onSubmit = async () => {
       });
     });
   } else {
-    await store.updateEvent(props.event, data).then(() => {
+    await cStore.updateEvent(props.event, data).then(() => {
       step.value = 1;
       Notify.create({
         message: "Evento atualizado com sucesso!",
@@ -311,10 +326,11 @@ const onSubmit = async () => {
       });
     });
   }
+  loading.value = false;
 };
 
 const onRemove = async () => {
-  await store.removeEvent(props.event.id).then(() => {
+  await cStore.removeEvent(props.event.id).then(() => {
     Notify.create({
       message: "Evento removido com sucesso!",
       color: "positive",

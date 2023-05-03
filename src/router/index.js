@@ -12,7 +12,7 @@ function isAuthenticated() {
   const lStorage = LocalStorage.getItem(process.env.storageName);
   const sStorage = SessionStorage.getItem(process.env.storageName);
 
-  return lStorage.token !== undefined || sStorage.token !== undefined;
+  return lStorage !== null || sStorage !== null;
 }
 
 /*

@@ -27,10 +27,6 @@
         </div>
         <slot name="body"></slot>
       </q-card-section>
-
-      <q-card-actions>
-        <slot name="actions"></slot>
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>

@@ -19,6 +19,7 @@
     :style="badgeStyles(event, timeStartPos, timeDurationHeight)"
   >
     <div class="title q-calendar__ellipsis">
+      <q-icon v-if="event.icon" :name="event.icon" class="q-mr-sm" />
       {{ event.title }}
       <event-tooltip :event="event" />
     </div>
@@ -70,7 +71,7 @@ const badgeStyles = (
   const s = {};
   if (timeStartPos && timeDurationHeight) {
     s.top = timeStartPos(event.time) + "px";
-    s.height = timeDurationHeight(event.duration) + "px";
+    s.height = timeDurationHeight(event.duration || 30) + "px";
   }
   s["align-items"] = "flex-start";
   return s;

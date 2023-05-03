@@ -41,7 +41,7 @@
           <template #head-day-event="{ scope: { timestamp } }">
             <div class="calendar-badge-header-container">
               <template v-for="event in events[timestamp.date]" :key="event.id">
-                <q-badge :class="`calendar-badge-header bg-${event.bgcolor}`">
+                <q-badge :class="`calendar-badge-header bg-${event.color}`">
                   <event-tooltip :event="event" />
                 </q-badge>
               </template>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onBeforeMount } from "vue";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarVariables.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarTransitions.sass";
 import "@quasar/quasar-ui-qcalendar/src/QCalendarMonth.sass";
@@ -104,10 +104,18 @@ import EventContainer from "../components/event/EventContainer.vue";
 import EventTooltip from "../components/event/EventTooltip.vue";
 import CustomDialog from "../components/shared/CustomDialog.vue";
 import EventForm from "../components/event/EventForm.vue";
+import { userStore } from "../stores/user";
 import { calendarStore } from "../stores/calendar";
 
-const store = calendarStore();
-const events = computed(() => store.getEvents);
+const uStore = userStore();
+const cStore = calendarStore();
+
+onBeforeMount(() => {
+  uStore.loadUser();
+  cStore.loadEvents();
+});
+
+const events = computed(() => cStore.getEvents);
 
 const calendarMonth = ref(null);
 const customDialog = ref(null);
