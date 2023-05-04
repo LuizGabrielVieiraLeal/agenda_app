@@ -1,8 +1,8 @@
 <template>
   <div
     v-if="mode === 'month'"
-    :class="containerClasses()"
     class="calendar-month-event"
+    :class="containerClasses()"
     :id="`event-${event.title}`"
   >
     <div class="title q-calendar__ellipsis">
@@ -14,8 +14,8 @@
   <div
     v-else
     @click="toogleCustomDialog"
-    class="calendar-day-event"
-    :class="`text-white bg-${event.color} full-width`"
+    class="calendar-day-event text-white full-width"
+    :class="`bg-${event.color}`"
     :style="badgeStyles(event, timeStartPos, timeDurationHeight)"
   >
     <div class="title q-calendar__ellipsis">

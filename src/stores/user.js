@@ -55,5 +55,13 @@ export const userStore = defineStore("user", {
         });
     },
     async signUp(data) {},
+    logout() {
+      const sessionData = SessionStorage.getItem(process.env.storageName);
+      const localData = LocalStorage.getItem(process.env.storageName);
+
+      if (sessionData !== null) SessionStorage.remove(process.env.storageName);
+      if (localData !== null) LocalStorage.remove(process.env.storageName);
+      axios.defaults.headers.common["Authorization"] = null;
+    },
   },
 });

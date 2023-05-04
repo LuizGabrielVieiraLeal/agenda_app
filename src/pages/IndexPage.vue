@@ -135,11 +135,11 @@ const onNext = () => {
 };
 
 const onClickDate = (data) => {
-  selectedDate.value = data.scope.timestamp.date;
+  console.log(data);
 };
 
 const onClickDay = (data) => {
-  selectedDate.value = data.scope.timestamp.date;
+  console.log(data);
 };
 
 const toogleDialog = () => {

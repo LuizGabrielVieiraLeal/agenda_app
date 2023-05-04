@@ -12,12 +12,14 @@
         <q-icon name="chevron_right" size="sm" />
       </q-btn>
       <span class="navigation-label text-bold">{{ setLabel() }}</span>
+      <user-settings class="q-ml-lg" />
     </q-toolbar>
   </q-header>
 </template>
 
 <script setup>
 import AppIcon from "../shared/AppIcon.vue";
+import UserSettings from "./UserSettings.vue";
 
 const props = defineProps({
   selectedDate: { type: String, required: true },

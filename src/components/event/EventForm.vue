@@ -199,35 +199,7 @@
       :persistent="true"
     >
       <template v-slot:body>
-        <div class="row">
-          <p>
-            Você está prestes a remover o evento
-            <strong> {{ event.title }} </strong> permanentemente. Tem certeza
-            que deseja prosseguir com a operação?
-          </p>
-        </div>
-        <div class="row">
-          <div class="col-6">
-            <q-btn
-              flat
-              color="primary"
-              label="Cancelar"
-              icon="close"
-              class="full-width"
-              @click="toogleCustomDialog"
-            />
-          </div>
-          <div class="col-6">
-            <q-btn
-              flat
-              color="negative"
-              label="Remover"
-              icon="delete"
-              class="full-width"
-              @click="onRemove"
-            />
-          </div>
-        </div>
+        <event-remove-content :event="event" @abort="toogleCustomDialog" />
       </template>
     </custom-dialog>
   </div>
@@ -240,6 +212,7 @@ import { calendarStore } from "../../stores/calendar";
 import { today } from "@quasar/quasar-ui-qcalendar/src";
 import CustomDialog from "../shared/CustomDialog.vue";
 import { Notify } from "quasar";
+import EventRemoveContent from "./EventRemoveContent.vue";
 
 const props = defineProps({
   event: { type: Object, default: null },
@@ -310,32 +283,42 @@ const onSubmit = async () => {
   }
 
   if (!props.event) {
-    await cStore.addEvent(Object.assign({}, data)).then(() => {
-      onReset();
-      Notify.create({
-        message: "Evento criado com sucesso!",
-        color: "positive",
+    await cStore
+      .addEvent(Object.assign({}, data))
+      .then((res) => {
+        console.log(res);
+        onReset();
+        Notify.create({
+          message: "Evento criado com sucesso!",
+          color: "positive",
+        });
+      })
+      .catch((ex) => {
+        Notify.create({
+          message:
+            "Erro ao adicionar evento. Por favor tente novamente mais tarde.",
+          color: "negative",
+        });
       });
-    });
   } else {
-    await cStore.updateEvent(props.event, data).then(() => {
-      step.value = 1;
-      Notify.create({
-        message: "Evento atualizado com sucesso!",
-        color: "positive",
+    await cStore
+      .updateEvent(props.event.id, Object.assign({}, data))
+      .then(() => {
+        step.value = 1;
+        Notify.create({
+          message: "Evento atualizado com sucesso!",
+          color: "positive",
+        });
+      })
+      .catch((ex) => {
+        Notify.create({
+          message:
+            "Erro ao atualizar evento. Por favor tente novamente mais tarde.",
+          color: "negative",
+        });
       });
-    });
   }
   loading.value = false;
-};
-
-const onRemove = async () => {
-  await cStore.removeEvent(props.event.id).then(() => {
-    Notify.create({
-      message: "Evento removido com sucesso!",
-      color: "positive",
-    });
-  });
 };
 
 const toogleCustomDialog = () => {
