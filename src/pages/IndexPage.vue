@@ -18,12 +18,14 @@
           use-navigation
           :min-weeks="6"
           class="full-height"
-          @click-date="onClickDate"
-          @click-day="onClickDay"
         >
           <template #day="{ scope: { timestamp } }">
             <template v-for="event in events[timestamp.date]" :key="event.id">
-              <event-container :event="event" mode="month" />
+              <event-container
+                :event="event"
+                mode="month"
+                @set-date="onSetDate"
+              />
             </template>
           </template>
         </q-calendar-month>
@@ -99,28 +101,47 @@ import {
   QCalendarMonth,
   today,
 } from "@quasar/quasar-ui-qcalendar/src/index.js";
-import NavigationBar from "../components/navigation/NavigationBar.vue";
-import EventContainer from "../components/event/EventContainer.vue";
-import EventTooltip from "../components/event/EventTooltip.vue";
-import CustomDialog from "../components/shared/CustomDialog.vue";
-import EventForm from "../components/event/EventForm.vue";
-import { userStore } from "../stores/user";
-import { calendarStore } from "../stores/calendar";
+import NavigationBar from "src/components/navigation/NavigationBar.vue";
+import EventContainer from "src/components/event/EventContainer.vue";
+import EventTooltip from "src/components/event/EventTooltip.vue";
+import CustomDialog from "src/components/shared/CustomDialog.vue";
+import EventForm from "src/components/event/EventForm.vue";
+import { userStore } from "src/stores/user";
+import { calendarStore } from "src/stores/calendar";
+import userService from "src/services/user";
+import calendarService from "src/services/calendar";
+import { authenticatedUser } from "src/utils/storage-helper";
 
 const uStore = userStore();
 const cStore = calendarStore();
-
-onBeforeMount(() => {
-  uStore.loadUser();
-  cStore.loadEvents();
-});
-
-const events = computed(() => cStore.getEvents);
-
 const calendarMonth = ref(null);
 const customDialog = ref(null);
-
 const selectedDate = ref(today());
+const events = computed(() => cStore.events);
+
+onBeforeMount(async () => {
+  if (uStore.currentUser === null || userStore.token === null) {
+    try {
+      const { currentUser, token } = authenticatedUser();
+      const { addAuth } = userService();
+      const addedAuth = addAuth(token);
+      if (addedAuth) {
+        uStore.setCurrentUser(currentUser);
+        uStore.setToken(token);
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
+  }
+
+  try {
+    const { list } = calendarService();
+    const { events } = await list();
+    cStore.setEvents(events);
+  } catch (ex) {
+    console.log(ex);
+  }
+});
 
 const onToday = () => {
   calendarMonth.value.moveToToday();
@@ -134,12 +155,8 @@ const onNext = () => {
   calendarMonth.value.next();
 };
 
-const onClickDate = (data) => {
-  console.log(data);
-};
-
-const onClickDay = (data) => {
-  console.log(data);
+const onSetDate = (date) => {
+  selectedDate.value = date;
 };
 
 const toogleDialog = () => {

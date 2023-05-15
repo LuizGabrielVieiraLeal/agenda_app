@@ -28,6 +28,6 @@
 </template>
 
 <script setup>
-import AppIcon from "../components/shared/AppIcon.vue";
-import LoginForm from "../components/auth/LoginForm.vue";
+import AppIcon from "src/components/shared/AppIcon.vue";
+import LoginForm from "src/components/auth/LoginForm.vue";
 </script>

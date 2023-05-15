@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="mode === 'month'"
+    @click="setDate(event.date)"
     class="calendar-month-event"
     :class="containerClasses()"
-    :id="`event-${event.title}`"
   >
     <div class="title q-calendar__ellipsis">
       <q-icon v-if="event.icon" :name="event.icon" class="q-mr-sm" />
@@ -39,9 +39,9 @@
 
 <script setup>
 import { ref } from "vue";
-import CustomDialog from "../shared/CustomDialog.vue";
-import EventForm from "./EventForm.vue";
-import EventTooltip from "./EventTooltip.vue";
+import CustomDialog from "src/components/shared/CustomDialog.vue";
+import EventForm from "src/components/event/EventForm.vue";
+import EventTooltip from "src/components/event/EventTooltip.vue";
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -50,7 +50,13 @@ const props = defineProps({
   timeDurationHeight: { default: null },
 });
 
+const emit = defineEmits(["setDate"]);
+
 const customDialog = ref(null);
+
+const setDate = (date) => {
+  emit("setDate", date);
+};
 
 const toogleCustomDialog = () => {
   customDialog.value?.toogleDialog();

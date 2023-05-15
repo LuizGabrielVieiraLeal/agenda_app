@@ -11,9 +11,5 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "MainLayout",
-  created() {
-    // remover quando fizer o login
-    this.$router.push("login");
-  },
 });
 </script>

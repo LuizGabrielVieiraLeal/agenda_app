@@ -18,8 +18,8 @@
 </template>
 
 <script setup>
-import AppIcon from "../shared/AppIcon.vue";
-import UserSettings from "./UserSettings.vue";
+import AppIcon from "src/components/shared/AppIcon.vue";
+import UserSettings from "src/components/navigation/UserSettings.vue";
 
 const props = defineProps({
   selectedDate: { type: String, required: true },

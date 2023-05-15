@@ -94,8 +94,8 @@ module.exports = configure(function (ctx) {
       env: {
         storageName: "agendasimples",
         baseURL: ctx.dev
-          ? "http://localhost:3000/api/v1"
-          : "http://localhost:3000/api/v1",
+          ? "http://localhost:3000/api/v1/"
+          : "http://localhost:3000/api/v1/",
       },
     },
 

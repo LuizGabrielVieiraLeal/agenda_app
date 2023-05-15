@@ -48,7 +48,7 @@
                 ]"
               />
             </div>
-            <div class="col-xs-12 col-md-4 q-px-xs">
+            <div class="col-xs-12 col-md-6 q-px-xs">
               <q-input
                 v-model="data.time"
                 filled
@@ -58,7 +58,7 @@
                 :rules="[(val) => (val && timeIsValid(val)) || 'Hora inválida']"
               />
             </div>
-            <div class="col-xs-12 col-md-4 q-px-xs">
+            <div class="col-xs-12 col-md-6 q-px-xs">
               <q-input
                 v-model="finalTime"
                 filled
@@ -66,15 +66,6 @@
                 label="Horário final"
                 lazy-rules
                 :rules="[(val) => finalTimeIsValid(val) || 'Hora inválida']"
-              />
-            </div>
-            <div class="col-xs-12 col-md-4 q-px-xs">
-              <q-input
-                v-model.number="data.days"
-                filled
-                type="number"
-                min="0"
-                label="Dias consecutivos"
               />
             </div>
           </div>
@@ -207,29 +198,28 @@
 
 <script setup>
 import { reactive, ref } from "vue";
-import { userStore } from "../../stores/user";
-import { calendarStore } from "../../stores/calendar";
+import { userStore } from "src/stores/user";
+import { calendarStore } from "src/stores/calendar";
+import calendarService from "src/services/calendar";
 import { today } from "@quasar/quasar-ui-qcalendar/src";
-import CustomDialog from "../shared/CustomDialog.vue";
+import CustomDialog from "src/components/shared/CustomDialog.vue";
+import EventRemoveContent from "src/components/event/EventRemoveContent.vue";
 import { Notify } from "quasar";
-import EventRemoveContent from "./EventRemoveContent.vue";
 
 const props = defineProps({
   event: { type: Object, default: null },
 });
 
-const customDialog = ref(null);
-
 const uStore = userStore();
 const cStore = calendarStore();
-
+const customDialog = ref(null);
 const eventForm = ref(null);
 const finalTime = ref(null);
 const step = ref(1);
 const loading = ref(false);
 
 const data = reactive({
-  user_id: uStore.getUser.id,
+  user_id: uStore.currentUser.id,
   title: props.event?.title || "",
   details: props.event?.details || null,
   date: props.event?.date || "",
@@ -237,7 +227,6 @@ const data = reactive({
   duration: props.event?.duration || null,
   color: props.event?.color || "blue",
   icon: props.event?.icon || null,
-  days: props.event?.days || 0,
 });
 
 const dateIsValid = (selectedDate) => {
@@ -266,14 +255,11 @@ const onReset = () => {
   data.title = data.details = data.date = "";
   data.time = data.duration = data.icon = null;
   data.color = "blue";
-  data.days = 0;
   step.value = 1;
 };
 
 const onSubmit = async () => {
   loading.value = true;
-  if (data.days === 0) data.days = null;
-  if (!data.details || data.details.length === 0) data.details = null;
 
   if (data.time && finalTime.value) {
     const startTime = new Date(`${data.date}T${data.time}:00`);
@@ -283,41 +269,40 @@ const onSubmit = async () => {
   }
 
   if (!props.event) {
-    await cStore
-      .addEvent(Object.assign({}, data))
-      .then((res) => {
-        console.log(res);
-        onReset();
-        Notify.create({
-          message: "Evento criado com sucesso!",
-          color: "positive",
-        });
-      })
-      .catch((ex) => {
-        Notify.create({
-          message:
-            "Erro ao adicionar evento. Por favor tente novamente mais tarde.",
-          color: "negative",
-        });
+    try {
+      const { create } = calendarService();
+      const { event, message } = await create({ event: data });
+      cStore.addEvent(event);
+      onReset();
+      Notify.create({
+        message: message,
+        color: "positive",
       });
+    } catch (ex) {
+      Notify.create({
+        message: ex.message,
+        color: "negative",
+      });
+    }
   } else {
-    await cStore
-      .updateEvent(props.event.id, Object.assign({}, data))
-      .then(() => {
-        step.value = 1;
-        Notify.create({
-          message: "Evento atualizado com sucesso!",
-          color: "positive",
-        });
-      })
-      .catch((ex) => {
-        Notify.create({
-          message:
-            "Erro ao atualizar evento. Por favor tente novamente mais tarde.",
-          color: "negative",
-        });
+    try {
+      data.id = props.event.id;
+      const { update } = calendarService();
+      const { event, message } = await update({ event: data });
+      cStore.updateEvent(event);
+      step.value = 1;
+      Notify.create({
+        message: message,
+        color: "positive",
       });
+    } catch (ex) {
+      Notify.create({
+        message: ex.message,
+        color: "negative",
+      });
+    }
   }
+
   loading.value = false;
 };
 

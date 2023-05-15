@@ -44,38 +44,42 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { userStore } from "../../stores/user";
+import { userStore } from "src/stores/user";
+import userService from "src/services/user";
+import { saveLocal, saveSession } from "src/utils/storage-helper";
 import { Notify } from "quasar";
 
 const router = useRouter();
-const store = userStore();
-
+const uStore = userStore();
+const { signIn } = userService();
 const loginForm = ref(null);
+const keepConnected = ref(false);
+const loading = ref(false);
 
 const data = reactive({
   email: "user@email.com",
   password: "123456",
 });
 
-const keepConnected = ref(false);
-const loading = ref(false);
+const onSubmit = async () => {
+  loading.value = true;
+  loginForm.value.validate().then(async (success) => {
+    if (success)
+      try {
+        const { user, token, message } = await signIn({ user: data });
+        uStore.setCurrentUser(user);
+        uStore.setToken(token);
 
-const onSubmit = () => {
-  loginForm.value
-    .validate()
-    .then(async (success) => {
-      loading.value = true;
-      if (success)
-        await store
-          .signIn(data, keepConnected)
-          .then(() => router.push("agenda"));
-    })
-    .catch((ex) => {
-      Notify.create({
-        message: ex.response.data.error,
-        color: "negative",
-      });
-    });
+        keepConnected.value ? saveLocal(user, token) : saveSession(user, token);
+
+        router.push({ name: "agenda" });
+      } catch (ex) {
+        Notify.create({
+          message: ex.message,
+          color: "negative",
+        });
+      }
+  });
   loading.value = false;
 };
 </script>

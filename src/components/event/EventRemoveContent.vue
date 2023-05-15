@@ -31,7 +31,8 @@
 </template>
 
 <script setup>
-import { calendarStore } from "../../stores/calendar";
+import { calendarStore } from "src/stores/calendar";
+import calendarService from "src/services/calendar";
 import { Notify } from "quasar";
 
 const props = defineProps({
@@ -39,26 +40,24 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["abort"]);
-
 const cStore = calendarStore();
 
 const onAbort = () => emit("abort");
 
 const onRemove = async () => {
-  await cStore
-    .removeEvent(props.event.id)
-    .then(() => {
-      Notify.create({
-        message: "Evento removido com sucesso!",
-        color: "positive",
-      });
-    })
-    .catch((ex) => {
-      Notify.create({
-        message:
-          "Erro ao remover evento. Por favor tente novamente mais tarde.",
-        color: "negative",
-      });
+  try {
+    const { destroy } = calendarService();
+    const { event, message } = await destroy(props.event.id);
+    cStore.removeEvent(event);
+    Notify.create({
+      message: message,
+      color: "positive",
     });
+  } catch (ex) {
+    Notify.create({
+      message: ex.message,
+      color: "negative",
+    });
+  }
 };
 </script>
