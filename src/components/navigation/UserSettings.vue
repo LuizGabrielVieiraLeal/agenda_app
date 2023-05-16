@@ -32,11 +32,10 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { userStore } from "src/stores/user";
 import userService from "src/services/user";
-import { clearStorage } from "src/utils/storage-helper";
 
 const router = useRouter();
 const uStore = userStore();
-const { removeAuth } = userService();
+const { logout } = userService();
 const darkMode = ref(false);
 
 const user = computed(() => uStore.currentUser);
@@ -44,12 +43,9 @@ const user = computed(() => uStore.currentUser);
 const onLogout = () => {
   router.push({ name: "login" }).finally(() => {
     try {
-      const authRemoved = removeAuth();
-      if (authRemoved) {
-        clearStorage();
-        uStore.setCurrentUser(null);
-        uStore.setToken(null);
-      }
+      logout();
+      uStore.setCurrentUser(null);
+      uStore.setToken(null);
     } catch (ex) {
       console.log(ex.message);
     }

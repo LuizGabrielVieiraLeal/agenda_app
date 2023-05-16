@@ -6,10 +6,16 @@
   </q-layout>
 </template>
 
-<script>
-import { defineComponent } from "vue";
+<script setup>
+import { onBeforeMount } from "vue";
+import { userStore } from "src/stores/user";
+import userService from "src/services/user";
 
-export default defineComponent({
-  name: "MainLayout",
+onBeforeMount(() => {
+  const uStore = userStore();
+  const { loadCurrentUser } = userService();
+  const { currentUser, token } = loadCurrentUser();
+  uStore.setCurrentUser(currentUser);
+  uStore.setToken(token);
 });
 </script>

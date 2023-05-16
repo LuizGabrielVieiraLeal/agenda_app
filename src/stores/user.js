@@ -16,5 +16,8 @@ export const userStore = defineStore("user", {
     setToken(token) {
       this._token = token;
     },
+    isAuth() {
+      return this._currentUser !== null && this._token !== null;
+    },
   },
 });

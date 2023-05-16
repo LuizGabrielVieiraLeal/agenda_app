@@ -106,13 +106,8 @@ import EventContainer from "src/components/event/EventContainer.vue";
 import EventTooltip from "src/components/event/EventTooltip.vue";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
 import EventForm from "src/components/event/EventForm.vue";
-import { userStore } from "src/stores/user";
 import { calendarStore } from "src/stores/calendar";
-import userService from "src/services/user";
 import calendarService from "src/services/calendar";
-import { authenticatedUser } from "src/utils/storage-helper";
-
-const uStore = userStore();
 const cStore = calendarStore();
 const calendarMonth = ref(null);
 const customDialog = ref(null);
@@ -120,20 +115,6 @@ const selectedDate = ref(today());
 const events = computed(() => cStore.events);
 
 onBeforeMount(async () => {
-  if (uStore.currentUser === null || userStore.token === null) {
-    try {
-      const { currentUser, token } = authenticatedUser();
-      const { addAuth } = userService();
-      const addedAuth = addAuth(token);
-      if (addedAuth) {
-        uStore.setCurrentUser(currentUser);
-        uStore.setToken(token);
-      }
-    } catch (ex) {
-      console.log(ex);
-    }
-  }
-
   try {
     const { list } = calendarService();
     const { events } = await list();

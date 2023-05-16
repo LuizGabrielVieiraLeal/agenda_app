@@ -46,12 +46,11 @@ import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { userStore } from "src/stores/user";
 import userService from "src/services/user";
-import { saveLocal, saveSession } from "src/utils/storage-helper";
 import { Notify } from "quasar";
 
 const router = useRouter();
 const uStore = userStore();
-const { signIn } = userService();
+const { login } = userService();
 const loginForm = ref(null);
 const keepConnected = ref(false);
 const loading = ref(false);
@@ -63,16 +62,17 @@ const data = reactive({
 
 const onSubmit = async () => {
   loading.value = true;
+
   loginForm.value.validate().then(async (success) => {
     if (success)
       try {
-        const { user, token, message } = await signIn({ user: data });
+        const { user, token } = await login(
+          { user: data },
+          keepConnected.value
+        );
         uStore.setCurrentUser(user);
         uStore.setToken(token);
-
-        keepConnected.value ? saveLocal(user, token) : saveSession(user, token);
-
-        router.push({ name: "agenda" });
+        router.push({ name: "home" });
       } catch (ex) {
         Notify.create({
           message: ex.message,
@@ -80,6 +80,7 @@ const onSubmit = async () => {
         });
       }
   });
+
   loading.value = false;
 };
 </script>

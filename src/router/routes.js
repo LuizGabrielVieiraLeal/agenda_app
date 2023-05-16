@@ -1,12 +1,19 @@
+import { userStore } from "src/stores/user";
+
 const routes = [
   {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
     children: [
       {
-        path: "agenda",
-        name: "agenda",
+        path: "",
+        name: "home",
         component: () => import("pages/IndexPage.vue"),
+        beforeEnter: (to, from, next) => {
+          const uStore = userStore();
+          if (uStore.isAuth()) next();
+          else next("/login");
+        },
       },
       {
         path: "login",
