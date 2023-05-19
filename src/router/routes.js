@@ -1,4 +1,5 @@
 import { userStore } from "src/stores/user";
+import userService from "src/services/user";
 
 const routes = [
   {
@@ -11,7 +12,9 @@ const routes = [
         component: () => import("pages/IndexPage.vue"),
         beforeEnter: (to, from, next) => {
           const uStore = userStore();
-          if (uStore.isAuth()) next();
+          const { isStored } = userService();
+
+          if (uStore.isAuth() || isStored()) next();
           else next("/login");
         },
       },

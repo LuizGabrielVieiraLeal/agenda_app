@@ -40,7 +40,7 @@
 <script setup>
 import { ref } from "vue";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
-import EventForm from "src/components/event/EventForm.vue";
+import EventForm from "src/components/event/forms/EventForm.vue";
 import EventTooltip from "src/components/event/EventTooltip.vue";
 
 const props = defineProps({

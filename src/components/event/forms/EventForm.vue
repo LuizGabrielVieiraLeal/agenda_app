@@ -55,7 +55,10 @@
                 type="time"
                 label="Horário inicial*"
                 lazy-rules
-                :rules="[(val) => (val && timeIsValid(val)) || 'Hora inválida']"
+                :rules="[
+                  (val) =>
+                    (val && timeIsValid(data.date, val)) || 'Hora inválida',
+                ]"
               />
             </div>
             <div class="col-xs-12 col-md-6 q-px-xs">
@@ -65,7 +68,9 @@
                 type="time"
                 label="Horário final"
                 lazy-rules
-                :rules="[(val) => finalTimeIsValid(val) || 'Hora inválida']"
+                :rules="[
+                  (val) => finalTimeIsValid(data.time, val) || 'Hora inválida',
+                ]"
               />
             </div>
           </div>
@@ -190,7 +195,7 @@
       :persistent="true"
     >
       <template v-slot:body>
-        <event-remove-content :event="event" @abort="toogleCustomDialog" />
+        <event-remove :event="event" @abort="toogleCustomDialog" />
       </template>
     </custom-dialog>
   </div>
@@ -201,10 +206,15 @@ import { reactive, ref } from "vue";
 import { userStore } from "src/stores/user";
 import { calendarStore } from "src/stores/calendar";
 import calendarService from "src/services/calendar";
-import { today } from "@quasar/quasar-ui-qcalendar/src";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
-import EventRemoveContent from "src/components/event/EventRemoveContent.vue";
+import EventRemove from "src/components/event/forms/EventRemove.vue";
 import { Notify } from "quasar";
+import {
+  dateIsValid,
+  timeIsValid,
+  finalTimeIsValid,
+} from "src/utils/event-validators";
+import { setDuration, setTimeFromDuration } from "src/utils/event-helper";
 
 const props = defineProps({
   event: { type: Object, default: null },
@@ -214,9 +224,16 @@ const uStore = userStore();
 const cStore = calendarStore();
 const customDialog = ref(null);
 const eventForm = ref(null);
-const finalTime = ref(null);
 const step = ref(1);
 const loading = ref(false);
+const finalTime =
+  props.event && props.event.duration
+    ? setTimeFromDuration(
+        props.event.date,
+        props.event.time,
+        props.event.duration
+      )
+    : ref(null);
 
 const data = reactive({
   user_id: uStore.currentUser.id,
@@ -229,22 +246,6 @@ const data = reactive({
   icon: props.event?.icon || null,
 });
 
-const dateIsValid = (selectedDate) => {
-  const currentDate = today();
-  return selectedDate >= currentDate;
-};
-
-const timeIsValid = (selectedTime) => {
-  if (data.date === today())
-    return `${selectedTime}:00` >= new Date().toLocaleTimeString();
-  return true;
-};
-
-const finalTimeIsValid = (selectedFinalTime) => {
-  if (data.time && selectedFinalTime) return data.time < selectedFinalTime;
-  return true;
-};
-
 const validate = () => {
   eventForm.value.validate().then((success) => {
     if (success) step.value = 2;
@@ -253,20 +254,14 @@ const validate = () => {
 
 const onReset = () => {
   data.title = data.details = data.date = "";
-  data.time = data.duration = data.icon = null;
+  data.time = data.duration = data.icon = finalTime.value = null;
   data.color = "blue";
   step.value = 1;
 };
 
 const onSubmit = async () => {
   loading.value = true;
-
-  if (data.time && finalTime.value) {
-    const startTime = new Date(`${data.date}T${data.time}:00`);
-    const endTime = new Date(`${data.date}T${finalTime.value}:00`);
-    const difMs = endTime.getTime() - startTime.getTime();
-    data.duration = difMs / 60000;
-  }
+  data.duration = setDuration(data.date, data.time, finalTime.value);
 
   if (!props.event) {
     try {
@@ -287,6 +282,7 @@ const onSubmit = async () => {
   } else {
     try {
       data.id = props.event.id;
+
       const { update } = calendarService();
       const { event, message } = await update({ event: data });
       cStore.updateEvent(event);

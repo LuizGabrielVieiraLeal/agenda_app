@@ -26,4 +26,20 @@ const removeNullEntries = (obj) => {
   return obj;
 };
 
-export { mapEvents, removeNullEntries };
+const setDuration = (date, startTime, endTime) => {
+  if (startTime && endTime) {
+    const sDate = new Date(`${date}T${startTime}:00`);
+    const eDate = new Date(`${date}T${endTime}:00`);
+    const difMs = eDate.getTime() - sDate.getTime();
+    return difMs / 60000;
+  } else return null;
+};
+
+const setTimeFromDuration = (date, time, duration) => {
+  let d = new Date(`${date}T${time}:00`);
+  d = new Date(d.setMinutes(d.getMinutes() + duration));
+  const t = `${d.getHours()}:${d.getMinutes()}`;
+  return t;
+};
+
+export { mapEvents, removeNullEntries, setDuration, setTimeFromDuration };

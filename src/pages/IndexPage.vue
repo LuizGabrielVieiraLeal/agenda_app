@@ -105,9 +105,12 @@ import NavigationBar from "src/components/navigation/NavigationBar.vue";
 import EventContainer from "src/components/event/EventContainer.vue";
 import EventTooltip from "src/components/event/EventTooltip.vue";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
-import EventForm from "src/components/event/EventForm.vue";
+import EventForm from "src/components/event/forms/EventForm.vue";
+import { userStore } from "src/stores/user";
+import userService from "src/services/user";
 import { calendarStore } from "src/stores/calendar";
 import calendarService from "src/services/calendar";
+
 const cStore = calendarStore();
 const calendarMonth = ref(null);
 const customDialog = ref(null);
@@ -116,11 +119,17 @@ const events = computed(() => cStore.events);
 
 onBeforeMount(async () => {
   try {
+    const uStore = userStore();
+    const { loadCurrentUser } = userService();
+    const { currentUser, token } = loadCurrentUser();
+    uStore.setCurrentUser(currentUser);
+    uStore.setToken(token);
+
     const { list } = calendarService();
     const { events } = await list();
     cStore.setEvents(events);
   } catch (ex) {
-    console.log(ex);
+    console.log(ex.message);
   }
 });
 

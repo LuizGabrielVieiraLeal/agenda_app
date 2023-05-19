@@ -4,13 +4,6 @@
     <q-popup-proxy>
       <q-banner>
         <div class="row no-wrap q-pa-md">
-          <div class="column">
-            <div class="text-h6 q-mb-md">Configurações</div>
-            <q-toggle v-model="darkMode" label="Modo noturno" />
-          </div>
-
-          <q-separator vertical inset class="q-mx-lg" />
-
           <div class="column items-center">
             <q-avatar size="72px" color="secondary" class="text-white">
               {{ user.name[0].toUpperCase() }}
@@ -28,7 +21,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { userStore } from "src/stores/user";
 import userService from "src/services/user";
@@ -36,7 +29,6 @@ import userService from "src/services/user";
 const router = useRouter();
 const uStore = userStore();
 const { logout } = userService();
-const darkMode = ref(false);
 
 const user = computed(() => uStore.currentUser);
 

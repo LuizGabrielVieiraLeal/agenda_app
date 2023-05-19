@@ -43,22 +43,13 @@ export default function userService() {
     }
   };
 
-  const login = async (payload, keepConnected) => {
-    try {
-      const response = await api.post("sign_in", payload);
-      _addAuth(response.data.token);
-      keepConnected
-        ? _saveLocal(response.data.user, response.data.token)
-        : _saveSession(response.data.user, response.data.token);
-      return response.data;
-    } catch (ex) {
-      throw new Error(ex.response.data.error);
-    }
-  };
-
-  const logout = () => {
-    _removeAuth();
-    _clearStorage();
+  const isStored = () => {
+    if (
+      (_lStorage !== null && _lStorage.currentUser !== null) ||
+      (_sStorage !== null && _sStorage?.currentUser !== null)
+    )
+      return true;
+    else return false;
   };
 
   const loadCurrentUser = () => {
@@ -77,5 +68,36 @@ export default function userService() {
     }
   };
 
-  return { login, logout, loadCurrentUser, update, destroy };
+  const login = async (payload, keepConnected) => {
+    try {
+      const response = await api.post("sign_in", payload);
+      _addAuth(response.data.token);
+      keepConnected
+        ? _saveLocal(response.data.user, response.data.token)
+        : _saveSession(response.data.user, response.data.token);
+      return response.data;
+    } catch (ex) {
+      throw new Error(ex.response.data.error);
+    }
+  };
+
+  const logout = () => {
+    _removeAuth();
+    _clearStorage();
+  };
+
+  const signUp = async (payload, keepConnected) => {
+    try {
+      const response = await api.post("sign_up", payload);
+      _addAuth(response.data.token);
+      keepConnected
+        ? _saveLocal(response.data.user, response.data.token)
+        : _saveSession(response.data.user, response.data.token);
+      return response.data;
+    } catch (ex) {
+      throw new Error(ex.response.data.error);
+    }
+  };
+
+  return { isStored, loadCurrentUser, login, logout, signUp, update, destroy };
 }

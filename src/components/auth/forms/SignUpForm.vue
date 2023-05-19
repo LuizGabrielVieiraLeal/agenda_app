@@ -1,11 +1,23 @@
 <template>
-  <q-form ref="loginForm" @submit="onSubmit">
+  <q-form ref="signUpForm" @submit="onSubmit">
     <div class="row">
       <div class="col-12 q-mb-sm">
         <q-input
           v-model="data.email"
+          type="email"
           filled
           label="E-mail*"
+          lazy-rules
+          :rules="[
+            (val) => !!val || 'O preenchimento deste campo é necessário',
+          ]"
+        />
+      </div>
+      <div class="col-12 q-mb-sm">
+        <q-input
+          v-model="data.name"
+          filled
+          label="Nome*"
           lazy-rules
           :rules="[
             (val) => !!val || 'O preenchimento deste campo é necessário',
@@ -24,6 +36,19 @@
           ]"
         />
       </div>
+      <div class="col-12">
+        <q-input
+          v-model="passwordConfirm"
+          type="password"
+          filled
+          label="Confirme a senha*"
+          lazy-rules
+          :rules="[
+            (val) => !!val || 'O preenchimento deste campo é necessário',
+            (val) => val === data.password || 'As senhas não conferem',
+          ]"
+        />
+      </div>
       <div class="col-12 q-mb-md">
         <q-checkbox v-model="keepConnected" label="Mantenha-me conectado" />
       </div>
@@ -35,7 +60,7 @@
         type="submit"
         color="secondary"
         class="full-width"
-        label="Entrar"
+        label="Cadastrar"
       />
     </div>
   </q-form>
@@ -50,23 +75,26 @@ import { Notify } from "quasar";
 
 const router = useRouter();
 const uStore = userStore();
-const { login } = userService();
-const loginForm = ref(null);
+const { signUp } = userService();
+const signUpForm = ref(null);
 const keepConnected = ref(false);
 const loading = ref(false);
 
 const data = reactive({
-  email: "user@email.com",
-  password: "123456",
+  email: "",
+  name: "",
+  password: "",
 });
+
+const passwordConfirm = ref(null);
 
 const onSubmit = async () => {
   loading.value = true;
 
-  loginForm.value.validate().then(async (success) => {
+  signUpForm.value.validate().then(async (success) => {
     if (success)
       try {
-        const { user, token } = await login(
+        const { user, token } = await signUp(
           { user: data },
           keepConnected.value
         );

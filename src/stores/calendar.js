@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { mapEvents, removeNullEntries } from "../utils/calendar-helper";
+import { mapEvents, removeNullEntries } from "src/utils/event-helper";
 
 export const calendarStore = defineStore("calendar", {
   state: () => ({
