@@ -9,7 +9,7 @@
     <div class="row q-pa-sm">
       <div class="col-xs-12 col-lg-9 q-pa-sm">
         <q-calendar-month
-          ref="calendarMonth"
+          ref="calendarMonthRef"
           :locale="this.$q.lang.isoName"
           v-model="selectedDate"
           animated
@@ -32,7 +32,6 @@
       </div>
       <div class="col-xs-12 col-lg-3 q-pa-sm">
         <q-calendar-day
-          ref="calendarDay"
           :locale="this.$q.lang.isoName"
           v-model="selectedDate"
           view="day"
@@ -112,7 +111,7 @@ import { calendarStore } from "src/stores/calendar";
 import calendarService from "src/services/calendar";
 
 const cStore = calendarStore();
-const calendarMonth = ref(null);
+const calendarMonthRef = ref(null);
 const customDialog = ref(null);
 const selectedDate = ref(today());
 const events = computed(() => cStore.events);
@@ -134,15 +133,15 @@ onBeforeMount(async () => {
 });
 
 const onToday = () => {
-  calendarMonth.value.moveToToday();
+  calendarMonthRef.value.moveToToday();
 };
 
 const onPrev = () => {
-  calendarMonth.value.prev();
+  calendarMonthRef.value.prev();
 };
 
 const onNext = () => {
-  calendarMonth.value.next();
+  calendarMonthRef.value.next();
 };
 
 const onSetDate = (date) => {

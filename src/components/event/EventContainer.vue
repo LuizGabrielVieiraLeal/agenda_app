@@ -24,7 +24,7 @@
       <event-tooltip :event="event" />
     </div>
     <custom-dialog
-      ref="customDialog"
+      ref="customDialogRef"
       prev-icon="edit"
       :header-text="event.title"
       transition-show="rotate"
@@ -54,11 +54,7 @@ const props = defineProps({
 });
 
 const cStore = calendarStore();
-const customDialog = ref(null);
-
-const toogleCustomDialog = () => {
-  customDialog.value?.toogleDialog();
-};
+const customDialogRef = ref(null);
 
 const onRemove = async () => {
   toogleCustomDialog();
@@ -77,6 +73,10 @@ const onRemove = async () => {
       color: "negative",
     });
   }
+};
+
+const toogleCustomDialog = () => {
+  customDialogRef.value?.toogleDialog();
 };
 
 const containerClasses = () => {

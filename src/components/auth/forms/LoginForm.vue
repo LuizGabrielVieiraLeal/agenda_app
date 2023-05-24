@@ -1,5 +1,5 @@
 <template>
-  <q-form ref="loginForm" @submit="onSubmit">
+  <q-form ref="loginFormRef" @submit="onSubmit">
     <div class="row">
       <div class="col-12 q-mb-sm">
         <q-input
@@ -52,7 +52,7 @@ import { Notify } from "quasar";
 const router = useRouter();
 const uStore = userStore();
 const { login } = userService();
-const loginForm = ref(null);
+const loginFormRef = ref(null);
 const keepConnected = ref(false);
 const loading = ref(false);
 
@@ -64,7 +64,7 @@ const data = reactive({
 const onSubmit = async () => {
   loading.value = true;
 
-  loginForm.value.validate().then(async (success) => {
+  loginFormRef.value.validate().then(async (success) => {
     if (success)
       try {
         const { user, token } = await login(

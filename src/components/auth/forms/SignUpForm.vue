@@ -1,5 +1,5 @@
 <template>
-  <q-form ref="signUpForm" @submit="onSubmit">
+  <q-form ref="signUpFormRef" @submit="onSubmit">
     <div class="row">
       <div class="col-12 q-mb-sm">
         <q-input
@@ -76,7 +76,7 @@ import { Notify } from "quasar";
 const router = useRouter();
 const uStore = userStore();
 const { signUp } = userService();
-const signUpForm = ref(null);
+const signUpFormRef = ref(null);
 const keepConnected = ref(false);
 const loading = ref(false);
 
@@ -91,7 +91,7 @@ const passwordConfirm = ref(null);
 const onSubmit = async () => {
   loading.value = true;
 
-  signUpForm.value.validate().then(async (success) => {
+  signUpFormRef.value.validate().then(async (success) => {
     if (success)
       try {
         const { user, token } = await signUp(
