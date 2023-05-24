@@ -1,20 +1,8 @@
 <template>
   <div>
-    <q-form ref="eventForm" @submit="onSubmit">
-      <q-stepper
-        v-model="step"
-        vertical
-        color="primary"
-        animated
-        class="no-shadow"
-      >
-        <q-step
-          :name="1"
-          title="Informações do evento"
-          icon="feed"
-          active-icon="feed"
-          :done="step > 1"
-        >
+    <q-form ref="eventFormRef" @submit="onSubmit">
+      <custom-stepper ref="customStepperRef" :steps="eventFormSteps">
+        <template v-slot:1>
           <div class="row">
             <div class="col-12 q-mb-xs q-px-xs">
               <q-input
@@ -25,6 +13,7 @@
                 :rules="[
                   (val) => !!val || 'O preenchimento deste campo é necessário',
                 ]"
+                required
               />
             </div>
             <div class="col-12 q-mb-lg q-px-xs">
@@ -46,6 +35,7 @@
                   (val) => !!val || 'O preenchimento deste campo é necessário',
                   (val) => dateIsValid(val) || 'Data inválida',
                 ]"
+                required
               />
             </div>
             <div class="col-xs-12 col-md-6 q-px-xs">
@@ -59,6 +49,7 @@
                   (val) =>
                     (val && timeIsValid(data.date, val)) || 'Hora inválida',
                 ]"
+                required
               />
             </div>
             <div class="col-xs-12 col-md-6 q-px-xs">
@@ -74,19 +65,8 @@
               />
             </div>
           </div>
-
-          <q-stepper-navigation>
-            <q-btn @click="validate" color="primary" label="Pŕoximo" />
-          </q-stepper-navigation>
-        </q-step>
-
-        <q-step
-          :name="2"
-          title="Cor"
-          icon="style"
-          active-icon="style"
-          :done="step > 2"
-        >
+        </template>
+        <template v-slot:2>
           <div class="row">
             <div
               v-for="color in this.$q.config.allowedEventColors"
@@ -103,26 +83,8 @@
               </div>
             </div>
           </div>
-
-          <q-stepper-navigation>
-            <q-btn @click="step = 3" color="primary" label="Próximo" />
-            <q-btn
-              flat
-              @click="step = 1"
-              color="primary"
-              label="Voltar"
-              class="q-ml-sm"
-            />
-          </q-stepper-navigation>
-        </q-step>
-
-        <q-step
-          :name="3"
-          title="Ícone"
-          icon="emoji_emotions"
-          active-icon="emoji_emotions"
-          caption="Opcional"
-        >
+        </template>
+        <template v-slot:3>
           <div class="row">
             <div
               v-for="icon in this.$q.config.allowedEventsIcons"
@@ -139,18 +101,8 @@
               </div>
             </div>
           </div>
-
-          <q-stepper-navigation>
-            <q-btn
-              flat
-              @click="step = 2"
-              color="primary"
-              label="Voltar"
-              class="q-ml-sm"
-            />
-          </q-stepper-navigation>
-        </q-step>
-      </q-stepper>
+        </template>
+      </custom-stepper>
       <div class="row">
         <div v-if="event" class="col-6">
           <q-btn
@@ -159,7 +111,7 @@
             color="negative"
             label="Excluir"
             icon="delete"
-            @click="toogleCustomDialog"
+            @click="toogleCustomDialog(false)"
           />
         </div>
         <div v-else class="col-6">
@@ -181,21 +133,24 @@
             color="positive"
             :label="event ? 'Atualizar' : 'Salvar'"
             icon="save"
-            :disable="step < 2"
           />
         </div>
       </div>
     </q-form>
     <custom-dialog
       v-if="event"
-      ref="customDialog"
+      ref="customDialogRef"
       size="small"
       prev-icon="delete"
       :header-text="event.title"
       :persistent="true"
     >
       <template v-slot:body>
-        <event-remove :event="event" @abort="toogleCustomDialog" />
+        <event-remove
+          :event="event"
+          @abort="toogleCustomDialog"
+          @remove="toogleCustomDialog"
+        />
       </template>
     </custom-dialog>
   </div>
@@ -206,6 +161,7 @@ import { reactive, ref } from "vue";
 import { userStore } from "src/stores/user";
 import { calendarStore } from "src/stores/calendar";
 import calendarService from "src/services/calendar";
+import CustomStepper from "src/components/shared/CustomStepper.vue";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
 import EventRemove from "src/components/event/forms/EventRemove.vue";
 import { Notify } from "quasar";
@@ -214,24 +170,32 @@ import {
   timeIsValid,
   finalTimeIsValid,
 } from "src/utils/event-validators";
-import { setDuration, setTimeFromDuration } from "src/utils/event-helper";
+import {
+  setDuration,
+  setTimeFromDuration,
+  eventFormSteps,
+} from "src/utils/event-helper";
 
 const props = defineProps({
   event: { type: Object, default: null },
 });
 
+const emit = defineEmits(["remove"]);
+
 const uStore = userStore();
 const cStore = calendarStore();
-const customDialog = ref(null);
-const eventForm = ref(null);
-const step = ref(1);
+const eventFormRef = ref(null);
+const customDialogRef = ref(null);
+const customStepperRef = ref(null);
 const loading = ref(false);
 const finalTime =
   props.event && props.event.duration
-    ? setTimeFromDuration(
-        props.event.date,
-        props.event.time,
-        props.event.duration
+    ? ref(
+        setTimeFromDuration(
+          props.event.date,
+          props.event.time,
+          props.event.duration
+        )
       )
     : ref(null);
 
@@ -240,69 +204,68 @@ const data = reactive({
   title: props.event?.title || "",
   details: props.event?.details || null,
   date: props.event?.date || "",
-  time: props.event?.time || null,
+  time: props.event?.time || "",
   duration: props.event?.duration || null,
   color: props.event?.color || "blue",
   icon: props.event?.icon || null,
 });
 
-const validate = () => {
-  eventForm.value.validate().then((success) => {
-    if (success) step.value = 2;
-  });
-};
-
 const onReset = () => {
   data.title = data.details = data.date = "";
   data.time = data.duration = data.icon = finalTime.value = null;
   data.color = "blue";
-  step.value = 1;
+  customStepperRef.value?.reset();
 };
 
 const onSubmit = async () => {
-  loading.value = true;
-  data.duration = setDuration(data.date, data.time, finalTime.value);
-
-  if (!props.event) {
-    try {
-      const { create } = calendarService();
-      const { event, message } = await create({ event: data });
-      cStore.addEvent(event);
-      onReset();
-      Notify.create({
-        message: message,
-        color: "positive",
-      });
-    } catch (ex) {
-      Notify.create({
-        message: ex.message,
-        color: "negative",
-      });
-    }
+  if (data.title === "" || data.date === "" || data.time === "") {
+    customStepperRef.value?.reset();
+    setTimeout(() => eventFormRef.value.validate(), 1000);
   } else {
-    try {
-      data.id = props.event.id;
+    loading.value = true;
+    data.duration = setDuration(data.date, data.time, finalTime.value);
 
-      const { update } = calendarService();
-      const { event, message } = await update({ event: data });
-      cStore.updateEvent(event);
-      step.value = 1;
-      Notify.create({
-        message: message,
-        color: "positive",
-      });
-    } catch (ex) {
-      Notify.create({
-        message: ex.message,
-        color: "negative",
-      });
+    if (!props.event) {
+      try {
+        const { create } = calendarService();
+        const { event, message } = await create({ event: data });
+        cStore.addEvent(event);
+        onReset();
+        Notify.create({
+          message: message,
+          color: "positive",
+        });
+      } catch (ex) {
+        Notify.create({
+          message: ex.message,
+          color: "negative",
+        });
+      }
+    } else {
+      try {
+        const { update } = calendarService();
+        const { event, message } = await update(props.event.id, {
+          event: data,
+        });
+        cStore.updateEvent(event);
+        customStepperRef.value?.reset();
+        Notify.create({
+          message: message,
+          color: "positive",
+        });
+      } catch (ex) {
+        Notify.create({
+          message: ex.message,
+          color: "negative",
+        });
+      }
     }
+    loading.value = false;
   }
-
-  loading.value = false;
 };
 
-const toogleCustomDialog = () => {
-  customDialog.value?.toogleDialog();
+const toogleCustomDialog = (remove) => {
+  customDialogRef.value?.toogleDialog();
+  if (remove) emit("remove");
 };
 </script>

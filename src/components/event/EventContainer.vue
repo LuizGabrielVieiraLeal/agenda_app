@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="mode === 'month'"
-    @click="setDate(event.date)"
+    @click="$emit('setDate', event.date)"
     class="calendar-month-event"
     :class="containerClasses()"
   >
@@ -31,7 +31,7 @@
       transition-hide="rotate"
     >
       <template v-slot:body>
-        <event-form :event="event" />
+        <event-form :event="event" @remove="onRemove" />
       </template>
     </custom-dialog>
   </div>
@@ -39,9 +39,12 @@
 
 <script setup>
 import { ref } from "vue";
+import { calendarStore } from "src/stores/calendar";
+import calendarService from "src/services/calendar";
 import CustomDialog from "src/components/shared/CustomDialog.vue";
 import EventForm from "src/components/event/forms/EventForm.vue";
 import EventTooltip from "src/components/event/EventTooltip.vue";
+import { Notify } from "quasar";
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -50,16 +53,30 @@ const props = defineProps({
   timeDurationHeight: { default: null },
 });
 
-const emit = defineEmits(["setDate"]);
-
+const cStore = calendarStore();
 const customDialog = ref(null);
-
-const setDate = (date) => {
-  emit("setDate", date);
-};
 
 const toogleCustomDialog = () => {
   customDialog.value?.toogleDialog();
+};
+
+const onRemove = async () => {
+  toogleCustomDialog();
+
+  try {
+    const { destroy } = calendarService();
+    const { event, message } = await destroy(props.event.id);
+    cStore.removeEvent(event);
+    Notify.create({
+      message: message,
+      color: "positive",
+    });
+  } catch (ex) {
+    Notify.create({
+      message: ex.message,
+      color: "negative",
+    });
+  }
 };
 
 const containerClasses = () => {

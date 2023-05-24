@@ -19,12 +19,9 @@ export default function useApi(url) {
     }
   };
 
-  const update = async (payload) => {
+  const update = async (id, payload) => {
     try {
-      const response = await api.patch(
-        `${url}/${Object.values(payload)[0].id}`,
-        payload
-      );
+      const response = await api.patch(`${url}/${id}`, payload);
       return response.data;
     } catch (ex) {
       throw new Error(ex.response.data.error);

@@ -6,9 +6,7 @@ export const calendarStore = defineStore("calendar", {
     _events: [],
   }),
   getters: {
-    events: (state) => {
-      return mapEvents(state._events);
-    },
+    events: (state) => mapEvents(state._events),
   },
   actions: {
     setEvents(events) {

@@ -42,4 +42,16 @@ const setTimeFromDuration = (date, time, duration) => {
   return t;
 };
 
-export { mapEvents, removeNullEntries, setDuration, setTimeFromDuration };
+const eventFormSteps = [
+  { title: "Informações do evento", icon: "feed" },
+  { title: "Cor", icon: "style" },
+  { title: "Ícone", icon: "emoji_emotions", optional: true },
+];
+
+export {
+  mapEvents,
+  removeNullEntries,
+  setDuration,
+  setTimeFromDuration,
+  eventFormSteps,
+};
